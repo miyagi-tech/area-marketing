@@ -7,22 +7,25 @@
 }
 
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #dbeafe;
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: rgba(99,102,241,0.15);
   --accent: #f59e0b;
-  --success: #10b981;
+  --accent2: #10b981;
   --danger: #ef4444;
-  --bg: #f8fafc;
-  --surface: #ffffff;
-  --border: #e2e8f0;
-  --text: #1e293b;
-  --text-muted: #64748b;
-  --shadow: 0 4px 24px rgba(0,0,0,0.10);
-  --radius: 16px;
-  --header-h: 60px;
-  --search-h: 56px;
-  --panel-w: 380px;
+  --bg: #0f1117;
+  --bg2: #1a1d27;
+  --bg3: #22263a;
+  --surface: #1e2235;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0f2ff;
+  --text-muted: #8b90a8;
+  --text-dim: #5a607a;
+  --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  --radius: 14px;
+  --header-h: 58px;
+  --panel-w: 400px;
 }
 
 html, body {
@@ -33,18 +36,19 @@ html, body {
   overflow: hidden;
 }
 
-/* ===== アプリ全体レイアウト ===== */
+/* ===== アプリ全体 ===== */
 #app {
   display: flex;
   flex-direction: column;
   height: 100vh;
   height: 100dvh;
+  background: var(--bg);
 }
 
 /* ===== ヘッダー ===== */
 #header {
-  background: var(--primary);
-  color: white;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
   height: var(--header-h);
   flex-shrink: 0;
   z-index: 100;
@@ -55,45 +59,48 @@ html, body {
   align-items: center;
   justify-content: space-between;
   height: 100%;
-  padding: 0 16px;
-  max-width: 100%;
+  padding: 0 20px;
 }
 
 .header-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .header-icon {
-  font-size: 24px;
+  font-size: 22px;
 }
 
 h1 {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  line-height: 1.2;
+  color: var(--text);
+  letter-spacing: 0.02em;
 }
 
 .header-sub {
   font-size: 11px;
-  opacity: 0.8;
+  color: var(--text-muted);
+  margin-top: 1px;
 }
 
 .header-badge {
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.4);
-  color: white;
-  font-size: 11px;
-  padding: 2px 8px;
+  background: var(--primary-light);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
   border-radius: 20px;
+  letter-spacing: 0.05em;
 }
 
 /* ===== 検索バー ===== */
 #search-bar {
-  background: var(--surface);
+  background: var(--bg2);
   border-bottom: 1px solid var(--border);
-  padding: 8px 12px;
+  padding: 8px 14px;
   flex-shrink: 0;
   position: relative;
   z-index: 200;
@@ -103,86 +110,90 @@ h1 {
   display: flex;
   gap: 8px;
   align-items: center;
-  max-width: 100%;
 }
 
 #search-input {
   flex: 1;
-  height: 40px;
-  border: 1.5px solid var(--border);
+  height: 38px;
+  border: 1px solid var(--border2);
   border-radius: 10px;
-  padding: 0 12px;
+  padding: 0 14px;
   font-size: 14px;
   color: var(--text);
-  background: var(--bg);
+  background: var(--bg3);
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+#search-input::placeholder {
+  color: var(--text-dim);
 }
 
 #search-input:focus {
   border-color: var(--primary);
-  background: white;
+  background: var(--surface);
 }
 
 #search-btn {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   background: var(--primary);
   border: none;
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+#search-btn:hover {
+  background: var(--primary-dark);
 }
 
 #search-suggestions {
   position: absolute;
   top: 100%;
-  left: 12px;
-  right: 12px;
-  background: white;
-  border: 1px solid var(--border);
+  left: 14px;
+  right: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
   border-radius: 10px;
   box-shadow: var(--shadow);
-  max-height: 200px;
+  max-height: 220px;
   overflow-y: auto;
   z-index: 300;
 }
 
 .suggestion-item {
   padding: 10px 14px;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   border-bottom: 1px solid var(--border);
+  color: var(--text);
   transition: background 0.15s;
 }
 
-.suggestion-item:last-child {
-  border-bottom: none;
+.suggestion-item:last-child { border-bottom: none; }
+
+.suggestion-item:hover {
+  background: var(--bg3);
 }
 
-.suggestion-item:hover, .suggestion-item:active {
-  background: var(--primary-light);
-}
-
-/* ===== メインコンテンツエリア（地図＋パネル） ===== */
+/* ===== メインコンテンツ ===== */
 #main-content {
   flex: 1;
-  display: flex;
-  flex-direction: row;
+  position: relative;
   min-height: 0;
   overflow: hidden;
 }
 
-/* ===== 地図 ===== */
+/* ===== 地図（全幅） ===== */
 #map-container {
-  flex: 1;
-  position: relative;
-  min-width: 0;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
 }
 
 #map {
@@ -192,43 +203,84 @@ h1 {
 
 #map-hint {
   position: absolute;
-  bottom: 16px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,0.65);
-  color: white;
-  padding: 8px 16px;
+  background: rgba(15,17,23,0.82);
+  color: var(--text-muted);
+  padding: 8px 18px;
   border-radius: 20px;
   font-size: 12px;
   white-space: nowrap;
   pointer-events: none;
   z-index: 400;
+  border: 1px solid var(--border2);
+  backdrop-filter: blur(8px);
   transition: opacity 0.3s;
 }
 
-#map-hint.hidden {
-  opacity: 0;
+#map-hint.hidden { opacity: 0; pointer-events: none; }
+
+/* ===== モードボタン（地図上） ===== */
+#mode-buttons {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 500;
+  display: flex;
+  gap: 8px;
 }
 
-/* ===== 結果パネル（PC：右サイドバー） ===== */
-#result-panel {
+.mode-btn {
   background: var(--surface);
-  border-left: 1px solid var(--border);
+  border: 1px solid var(--border2);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mode-btn:hover {
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.mode-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+/* ===== 結果パネル（右サイドバー / スマホ下部） ===== */
+#result-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
   width: var(--panel-w);
-  flex-shrink: 0;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
+  z-index: 450;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#result-panel.hidden {
-  /* PCでは非表示にせず、プレースホルダーを表示 */
+#result-panel.open {
+  transform: translateX(0);
 }
 
-.panel-handle {
-  display: none; /* PCでは不要 */
-}
+.panel-handle { display: none; }
 
 /* ===== パネル空状態 ===== */
 #panel-empty {
@@ -237,25 +289,56 @@ h1 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
-  padding: 40px 20px;
+  color: var(--text-dim);
+  padding: 40px 24px;
   text-align: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 #panel-empty .empty-icon {
-  font-size: 48px;
-  opacity: 0.4;
+  font-size: 44px;
+  opacity: 0.3;
 }
 
 #panel-empty p {
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+/* ===== パネルヘッダー（閉じるボタン付き） ===== */
+#panel-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 14px 0;
+  flex-shrink: 0;
+}
+
+#panel-close-btn {
+  width: 30px;
+  height: 30px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+#panel-close-btn:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
 }
 
 /* ===== エリアヘッダー ===== */
 #area-header {
-  padding: 16px 16px 10px;
+  padding: 10px 16px 12px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -263,55 +346,71 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  gap: 8px;
 }
 
 #area-name {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--text);
+  letter-spacing: 0.01em;
 }
 
 #income-badge {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 20px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.income-high { background: #fef3c7; color: #92400e; }
-.income-mid  { background: #dbeafe; color: #1e40af; }
-.income-low  { background: #f0fdf4; color: #166534; }
+.income-high { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+.income-mid  { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+.income-low  { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
 
 #area-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .area-tag {
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--bg3);
+  border: 1px solid var(--border2);
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 10px;
   padding: 2px 8px;
   border-radius: 20px;
 }
 
 .area-meta {
   display: flex;
-  gap: 12px;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* ===== 複数エリア表示 ===== */
+#multi-area-info {
+  padding: 10px 16px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
   font-size: 12px;
   color: var(--text-muted);
+}
+
+#multi-area-info strong {
+  color: var(--primary);
 }
 
 /* ===== タブ ===== */
 #tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--bg2);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -320,15 +419,16 @@ h1 {
 
 .tab-btn {
   flex: 1;
-  height: 44px;
+  height: 42px;
   border: none;
   background: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-dim);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: all 0.2s;
+  letter-spacing: 0.02em;
 }
 
 .tab-btn.active {
@@ -337,51 +437,48 @@ h1 {
 }
 
 .tab-content {
-  padding: 14px 16px 24px;
+  padding: 14px 16px 28px;
 }
 
-.tab-content.hidden {
-  display: none;
-}
+.tab-content.hidden { display: none; }
 
 /* ===== セクション ===== */
 .section-title {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 14px 0 8px;
+  letter-spacing: 0.1em;
+  margin: 16px 0 8px;
 }
 
-.section-title:first-child {
-  margin-top: 0;
-}
+.section-title:first-child { margin-top: 0; }
 
 /* ===== 年収カード ===== */
 .income-card {
-  background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
-  color: white;
+  background: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
+  border: 1px solid rgba(99,102,241,0.3);
   border-radius: 12px;
-  padding: 16px;
+  padding: 18px;
   text-align: center;
 }
 
 .income-amount {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
+  color: #c7d2fe;
   line-height: 1;
 }
 
 .income-unit {
-  font-size: 13px;
-  opacity: 0.85;
-  margin-top: 4px;
+  font-size: 12px;
+  color: #818cf8;
+  margin-top: 5px;
 }
 
 .income-note {
-  font-size: 11px;
-  opacity: 0.7;
+  font-size: 10px;
+  color: var(--text-dim);
   margin-top: 6px;
 }
 
@@ -393,28 +490,29 @@ h1 {
 }
 
 .age-group-badge {
-  background: var(--primary-light);
-  color: var(--primary-dark);
-  font-size: 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text-muted);
+  font-size: 13px;
   font-weight: 700;
   padding: 8px 14px;
   border-radius: 10px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 .age-group-badge.rank1 {
-  background: var(--primary);
-  color: white;
-  font-size: 16px;
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: #a5b4fc;
 }
 
 /* ===== 家族構成 ===== */
 #family-types {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .family-item {
@@ -424,30 +522,31 @@ h1 {
 }
 
 .family-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   width: 100px;
   flex-shrink: 0;
+  color: var(--text-muted);
 }
 
 .family-bar-wrap {
   flex: 1;
-  background: var(--bg);
+  background: var(--bg3);
   border-radius: 4px;
-  height: 8px;
+  height: 6px;
   overflow: hidden;
 }
 
 .family-bar {
   height: 100%;
   border-radius: 4px;
-  background: var(--primary);
+  background: linear-gradient(90deg, var(--primary) 0%, #818cf8 100%);
   transition: width 0.6s ease;
 }
 
 .family-ratio {
-  font-size: 12px;
-  color: var(--text-muted);
+  font-size: 11px;
+  color: var(--text-dim);
   width: 36px;
   text-align: right;
   flex-shrink: 0;
@@ -457,27 +556,27 @@ h1 {
 #age-ratio-bars {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .ratio-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .ratio-label {
-  width: 80px;
+  width: 100px;
   color: var(--text-muted);
   flex-shrink: 0;
 }
 
 .ratio-bar-wrap {
   flex: 1;
-  background: var(--bg);
+  background: var(--bg3);
   border-radius: 4px;
-  height: 8px;
+  height: 6px;
 }
 
 .ratio-bar {
@@ -487,13 +586,13 @@ h1 {
 }
 
 .ratio-bar.children { background: #f59e0b; }
-.ratio-bar.working  { background: #3b82f6; }
-.ratio-bar.elderly  { background: #6b7280; }
+.ratio-bar.working  { background: var(--primary); }
+.ratio-bar.elderly  { background: #475569; }
 
 .ratio-val {
   width: 36px;
   text-align: right;
-  color: var(--text-muted);
+  color: var(--text-dim);
   flex-shrink: 0;
 }
 
@@ -505,22 +604,28 @@ h1 {
 }
 
 .spending-card {
-  background: var(--bg);
+  background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 12px;
+  padding: 14px 12px;
   text-align: center;
+  transition: border-color 0.2s;
+}
+
+.spending-card:hover {
+  border-color: var(--border2);
 }
 
 .spending-icon {
-  font-size: 22px;
-  margin-bottom: 4px;
+  font-size: 20px;
+  margin-bottom: 5px;
 }
 
 .spending-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 4px;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 5px;
+  letter-spacing: 0.03em;
 }
 
 .spending-amount {
@@ -531,134 +636,142 @@ h1 {
 
 .spending-unit {
   font-size: 10px;
-  color: var(--text-muted);
+  color: var(--text-dim);
 }
 
 /* ===== 年齢分布チャート ===== */
 #age-chart {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
 .age-bar-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .age-bar-label {
-  width: 44px;
-  color: var(--text-muted);
+  width: 52px;
+  color: var(--text-dim);
   flex-shrink: 0;
   text-align: right;
 }
 
 .age-bar-wrap {
   flex: 1;
-  background: var(--bg);
+  background: var(--bg3);
   border-radius: 4px;
-  height: 18px;
+  height: 16px;
   overflow: hidden;
 }
 
 .age-bar-fill {
   height: 100%;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--primary) 0%, #60a5fa 100%);
+  background: linear-gradient(90deg, var(--primary) 0%, #818cf8 100%);
   transition: width 0.6s ease;
   display: flex;
   align-items: center;
   padding-left: 6px;
+  min-width: 2px;
 }
 
 .age-bar-count {
   font-size: 10px;
-  color: white;
+  color: rgba(255,255,255,0.8);
   font-weight: 600;
   white-space: nowrap;
 }
 
 /* ===== データ注記 ===== */
 .data-note {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 12px;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 14px;
   padding: 8px 10px;
-  background: var(--bg);
+  background: var(--bg3);
   border-radius: 8px;
-  border-left: 3px solid var(--border);
+  border-left: 2px solid var(--border2);
+  line-height: 1.5;
 }
 
 /* ===== ローディング ===== */
 #loading {
   position: fixed;
   inset: 0;
-  background: rgba(255,255,255,0.85);
+  background: rgba(15,17,23,0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
-#loading.hidden {
-  display: none;
-}
+#loading.hidden { display: none; }
 
 .loading-inner {
   text-align: center;
+  color: var(--text-muted);
 }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid var(--border);
+  border: 2px solid var(--border2);
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin: 0 auto 10px;
+  margin: 0 auto 12px;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ===== エラートースト ===== */
 #error-toast {
   position: fixed;
-  bottom: 20px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--danger);
-  color: white;
+  background: #7f1d1d;
+  border: 1px solid #ef4444;
+  color: #fca5a5;
   padding: 10px 20px;
   border-radius: 10px;
   font-size: 13px;
   z-index: 1000;
   box-shadow: var(--shadow);
+  white-space: nowrap;
 }
 
-#error-toast.hidden {
-  display: none;
-}
+#error-toast.hidden { display: none; }
 
 /* ===== Leafletカスタム ===== */
 .leaflet-popup-content-wrapper {
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+  background: var(--surface) !important;
+  border: 1px solid var(--border2) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow) !important;
+  color: var(--text) !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--surface) !important;
 }
 
 .leaflet-popup-content {
-  margin: 12px 16px;
+  margin: 12px 16px !important;
   font-size: 13px;
   font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+  color: var(--text) !important;
 }
 
 .popup-town {
   font-weight: 800;
   font-size: 15px;
-  color: var(--primary);
+  color: #818cf8;
   margin-bottom: 4px;
 }
 
@@ -667,44 +780,68 @@ h1 {
   font-size: 12px;
 }
 
+/* Leaflet コントロール ダーク化 */
+.leaflet-control-zoom a {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: var(--border2) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--bg3) !important;
+}
+
+/* ===== 範囲選択オーバーレイ ===== */
+#selection-overlay {
+  position: absolute;
+  border: 2px dashed var(--primary);
+  background: rgba(99,102,241,0.1);
+  pointer-events: none;
+  z-index: 600;
+  display: none;
+}
+
 /* ===== ユーティリティ ===== */
 .hidden { display: none !important; }
 
-/* ===== スマホ（768px未満）：上下レイアウト ===== */
+/* ===== スマホ（767px以下） ===== */
 @media (max-width: 767px) {
-  #main-content {
-    flex-direction: column;
-  }
-
-  #map-container {
-    flex: 1;
-    min-height: 200px;
-  }
-
   #result-panel {
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
     width: 100%;
+    max-height: 60vh;
     border-left: none;
     border-top: 1px solid var(--border);
     border-radius: var(--radius) var(--radius) 0 0;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-    max-height: 55vh;
-    flex-shrink: 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #result-panel.open {
+    transform: translateY(0);
   }
 
   .panel-handle {
     display: block;
-    width: 40px;
+    width: 36px;
     height: 4px;
-    background: var(--border);
+    background: var(--border2);
     border-radius: 2px;
     margin: 10px auto 0;
+    flex-shrink: 0;
   }
 
-  #panel-empty {
-    padding: 24px 20px;
+  #mode-buttons {
+    top: 10px;
+    left: 10px;
   }
 
-  #panel-empty .empty-icon {
-    font-size: 36px;
+  .mode-btn {
+    font-size: 11px;
+    padding: 6px 10px;
   }
 }

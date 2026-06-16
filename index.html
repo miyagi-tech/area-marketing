@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="エリア分析">
   <title>世田谷区 エリア購買層分析</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -12,6 +12,7 @@
 </head>
 <body>
   <div id="app">
+
     <!-- ヘッダー -->
     <header id="header">
       <div class="header-inner">
@@ -35,22 +36,42 @@
       <div id="search-suggestions"></div>
     </div>
 
-    <!-- メインコンテンツ（地図＋パネル） -->
+    <!-- メインコンテンツ（地図全幅） -->
     <div id="main-content">
 
-      <!-- 地図 -->
+      <!-- 地図（全幅） -->
       <div id="map-container">
         <div id="map"></div>
-        <div id="map-hint">
-          <span>🗺️ 地図をクリックまたは町名を検索してください</span>
+
+        <!-- モード切替ボタン（地図上） -->
+        <div id="mode-buttons">
+          <button class="mode-btn active" id="btn-point" onclick="setMode('point')">
+            📍 1点選択
+          </button>
+          <button class="mode-btn" id="btn-area" onclick="setMode('area')">
+            ⬜ 範囲選択
+          </button>
         </div>
+
+        <!-- ヒント -->
+        <div id="map-hint">
+          <span id="hint-text">📍 地図をクリックまたは町名を検索してください</span>
+        </div>
+
+        <!-- 範囲選択オーバーレイ -->
+        <div id="selection-overlay"></div>
       </div>
 
-      <!-- 結果パネル -->
+      <!-- 結果パネル（右サイドバー / スマホ下部） -->
       <div id="result-panel">
         <div class="panel-handle"></div>
 
-        <!-- 空状態（未選択時） -->
+        <!-- パネル閉じるボタン -->
+        <div id="panel-top-bar">
+          <button id="panel-close-btn" title="閉じる">✕</button>
+        </div>
+
+        <!-- 空状態 -->
         <div id="panel-empty">
           <div class="empty-icon">🗺️</div>
           <p>地図をクリックするか<br>町名を検索してください</p>
@@ -68,6 +89,9 @@
             <span id="area-age"></span>
           </div>
         </div>
+
+        <!-- 複数エリア情報（範囲選択時） -->
+        <div id="multi-area-info" class="hidden"></div>
 
         <!-- タブ（選択後） -->
         <div id="tabs" class="hidden">
@@ -104,7 +128,8 @@
           <div id="age-chart"></div>
           <div class="data-note">※ 令和2年国勢調査（東京都統計部）</div>
         </div>
-      </div>
+
+      </div><!-- /#result-panel -->
 
     </div><!-- /#main-content -->
 
@@ -118,7 +143,8 @@
 
     <!-- エラー -->
     <div id="error-toast" class="hidden"></div>
-  </div>
+
+  </div><!-- /#app -->
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
