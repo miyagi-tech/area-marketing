@@ -67,34 +67,72 @@ function initUI() {
   document.addEventListener('click', e => {
     if (!e.target.closest('#search-bar')) {
       document.getElementById('search-suggestions').innerHTML = '';
+      // 履歴ドロワーも閉じる
+      document.getElementById('history-drawer').classList.add('hidden');
     }
   });
+
+  // 履歴ボタン
+  document.getElementById('history-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    const drawer = document.getElementById('history-drawer');
+    drawer.classList.toggle('hidden');
+  });
+
+  // タブ切替（クリック）
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // タブスワイプ（左右）
+  const tabOrder = ['profile', 'spending', 'age'];
+  let tabTouchStartX = 0;
+  const tabWrapper = document.getElementById('tab-wrapper');
+  if (tabWrapper) {
+    tabWrapper.addEventListener('touchstart', e => {
+      tabTouchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    tabWrapper.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - tabTouchStartX;
+      if (Math.abs(dx) < 40) return;
+      const activeBtn = document.querySelector('.tab-btn.active');
+      if (!activeBtn) return;
+      const idx = tabOrder.indexOf(activeBtn.dataset.tab);
+      if (dx < -40 && idx < tabOrder.length - 1) switchTab(tabOrder[idx + 1]);
+      else if (dx > 40 && idx > 0) switchTab(tabOrder[idx - 1]);
+    }, { passive: true });
+  }
 
   // パネルコントロールボタン
   document.getElementById('panel-minimize-btn').addEventListener('click', () => setPanelState('peek'));
   document.getElementById('panel-expand-btn').addEventListener('click', () => setPanelState('open'));
   document.getElementById('panel-new-search-btn').addEventListener('click', () => {
-    setPanelState('closed');
-    setTimeout(() => document.getElementById('search-input').focus(), 300);
+    resetToHome();
+    setTimeout(() => document.getElementById('search-input').focus(), 350);
   });
 
-  // スマホ: スワイプでパネル操作
-  const handle = document.getElementById('panel-handle');
-  if (handle) {
-    handle.addEventListener('touchstart', e => {
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-    handle.addEventListener('touchend', e => {
-      const dy = e.changedTouches[0].clientY - touchStartY;
-      if (dy > 50) {
-        if (panelState === 'open') setPanelState('peek');
-        else if (panelState === 'peek') setPanelState('closed');
-      } else if (dy < -50) {
-        if (panelState === 'peek') setPanelState('open');
-        else if (panelState === 'closed') setPanelState('open');
-      }
-    }, { passive: true });
-  }
+  // スマホ: パネル全体でスワイプ操作
+  const panel = document.getElementById('result-panel');
+  let panelTouchStartY = 0;
+  let panelTouchStartX = 0;
+  panel.addEventListener('touchstart', e => {
+    panelTouchStartY = e.touches[0].clientY;
+    panelTouchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  panel.addEventListener('touchend', e => {
+    const dy = e.changedTouches[0].clientY - panelTouchStartY;
+    const dx = Math.abs(e.changedTouches[0].clientX - panelTouchStartX);
+    // 縦スワイプ（横移動が少ない場合のみ）
+    if (dx > 40) return;
+    if (dy > 60) {
+      // 下スワイプ: open→peek→closed
+      if (panelState === 'open') setPanelState('peek');
+      else if (panelState === 'peek') setPanelState('closed');
+    } else if (dy < -60) {
+      // 上スワイプ: closed→open, peek→open
+      if (panelState === 'peek' || panelState === 'closed') setPanelState('open');
+    }
+  }, { passive: true });
 
   // フリーハンド描画イベント（地図コンテナ）
   const mapEl = document.getElementById('map');
@@ -113,6 +151,25 @@ function setPanelState(state) {
   if (state === 'open') panel.classList.add('open');
   else if (state === 'peek') panel.classList.add('peek');
   panelState = state;
+  // ※ closed時のリセットは resetToHome() で明示的に行う
+  //   スワイプで閉じた場合は地図のマーカー・ポリゴンを残す
+}
+
+// ===== 完全リセット（再検索ボタン用） =====
+function resetToHome() {
+  setPanelState('closed');
+  document.getElementById('panel-empty').classList.remove('hidden');
+  document.getElementById('area-header').classList.add('hidden');
+  document.getElementById('multi-area-info').classList.add('hidden');
+  document.getElementById('tabs').classList.add('hidden');
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  document.getElementById('map-hint').classList.remove('hidden');
+  document.getElementById('search-input').value = '';
+  // マーカー・ポリゴンをクリア
+  if (currentMarker) { map.removeLayer(currentMarker); currentMarker = null; }
+  if (freehandPolygon) { map.removeLayer(freehandPolygon); freehandPolygon = null; }
+  // ピンポイントモードに戻す
+  setMode('point');
 }
 
 // ===== モード切替 =====
@@ -652,12 +709,14 @@ function addHistory(name) {
 }
 
 function renderHistory() {
-  const box = document.getElementById('search-history');
   const list = document.getElementById('history-list');
-  if (!searchHistory.length) { box.classList.add('hidden'); return; }
-  box.classList.remove('hidden');
+  if (!list) return;
+  if (!searchHistory.length) {
+    list.innerHTML = '<div style="color:#4a5568;font-size:12px;padding:4px 0">履歴はありません</div>';
+    return;
+  }
   list.innerHTML = searchHistory.map(h =>
-    `<div class="history-chip" onclick="quickSelect('${h}')">${h}</div>`
+    `<div class="history-chip" onclick="quickSelect('${h}');document.getElementById('history-drawer').classList.add('hidden')">${h}</div>`
   ).join('');
 }
 

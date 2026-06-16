@@ -31,9 +31,17 @@
     <div id="search-bar">
       <div class="search-inner">
         <input type="text" id="search-input" placeholder="町名を検索（例：三軒茶屋、成城...）" autocomplete="off">
+        <button id="history-btn" title="検索履歴">🕐</button>
         <button id="search-btn">🔍</button>
       </div>
       <div id="search-suggestions"></div>
+      <!-- 履歴ドロワー（ボタンで開閉） -->
+      <div id="history-drawer" class="hidden">
+        <div class="history-drawer-inner">
+          <div class="history-label">最近の検索</div>
+          <div class="history-list" id="history-list"></div>
+        </div>
+      </div>
     </div>
 
     <!-- メインコンテンツ（地図全幅） -->
@@ -75,13 +83,7 @@
             <button class="panel-ctrl-btn" id="panel-minimize-btn" title="縮小">⬇ 縮小</button>
             <button class="panel-ctrl-btn" id="panel-expand-btn" title="展開">⬆ 展開</button>
           </div>
-          <button class="panel-ctrl-btn" id="panel-new-search-btn" title="新しい検索">🔍 再検索</button>
-        </div>
-
-        <!-- 検索履歴（直近5件） -->
-        <div id="search-history" class="hidden">
-          <div class="history-label">最近の検索</div>
-          <div class="history-list" id="history-list"></div>
+          <button class="panel-ctrl-btn" id="panel-new-search-btn">🔍 再検索</button>
         </div>
 
         <!-- 空状態 -->
@@ -113,34 +115,43 @@
           <button class="tab-btn" data-tab="age">年齢分布</button>
         </div>
 
-        <!-- 購買層タブ -->
-        <div id="tab-profile" class="tab-content hidden">
-          <div class="section-title">推定世帯年収</div>
-          <div id="income-display" class="income-card"></div>
+        <!-- タブコンテンツ（スワイプ対応ラッパー） -->
+        <div id="tab-wrapper">
+          <!-- 購買層タブ -->
+          <div id="tab-profile" class="tab-content hidden">
+            <div class="tab-inner">
+              <div class="section-title">推定世帯年収</div>
+              <div id="income-display" class="income-card"></div>
 
-          <div class="section-title">主要年齢層</div>
-          <div id="age-groups"></div>
+              <div class="section-title">主要年齢層</div>
+              <div id="age-groups"></div>
 
-          <div class="section-title">世帯構成</div>
-          <div id="family-types"></div>
+              <div class="section-title">世帯構成</div>
+              <div id="family-types"></div>
 
-          <div class="section-title">年齢構成比</div>
-          <div id="age-ratio-bars"></div>
-        </div>
+              <div class="section-title">年齢構成比</div>
+              <div id="age-ratio-bars"></div>
+            </div>
+          </div>
 
-        <!-- 支出傾向タブ -->
-        <div id="tab-spending" class="tab-content hidden">
-          <div class="section-title">月間推定支出（世帯平均）</div>
-          <div id="spending-cards"></div>
-          <div class="data-note">※ 総務省「家計調査年報（2022年）」をベースに推計</div>
-        </div>
+          <!-- 支出傾向タブ -->
+          <div id="tab-spending" class="tab-content hidden">
+            <div class="tab-inner">
+              <div class="section-title">月間推定支出（世帯平均）</div>
+              <div id="spending-cards"></div>
+              <div class="data-note">※ 総務省「家計調査年報（2022年）」をベースに推計</div>
+            </div>
+          </div>
 
-        <!-- 年齢分布タブ -->
-        <div id="tab-age" class="tab-content hidden">
-          <div class="section-title">年齢分布（人口）</div>
-          <div id="age-chart"></div>
-          <div class="data-note">※ 令和2年国勢調査（東京都統計部）</div>
-        </div>
+          <!-- 年齢分布タブ -->
+          <div id="tab-age" class="tab-content hidden">
+            <div class="tab-inner">
+              <div class="section-title">年齢分布（人口）</div>
+              <div id="age-chart"></div>
+              <div class="data-note">※ 令和2年国勢調査（東京都統計部）</div>
+            </div>
+          </div>
+        </div><!-- /#tab-wrapper -->
 
       </div><!-- /#result-panel -->
 
