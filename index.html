@@ -35,67 +35,78 @@
       <div id="search-suggestions"></div>
     </div>
 
-    <!-- 地図 -->
-    <div id="map-container">
-      <div id="map"></div>
-      <div id="map-hint">
-        <span>🗺️ 地図をクリックまたは町名を検索してください</span>
-      </div>
-    </div>
+    <!-- メインコンテンツ（地図＋パネル） -->
+    <div id="main-content">
 
-    <!-- 結果パネル -->
-    <div id="result-panel" class="hidden">
-      <div class="panel-handle"></div>
-      
-      <!-- エリアヘッダー -->
-      <div id="area-header">
-        <div class="area-title-row">
-          <h2 id="area-name"></h2>
-          <div id="income-badge"></div>
-        </div>
-        <div id="area-tags"></div>
-        <div class="area-meta">
-          <span id="area-pop"></span>
-          <span id="area-age"></span>
+      <!-- 地図 -->
+      <div id="map-container">
+        <div id="map"></div>
+        <div id="map-hint">
+          <span>🗺️ 地図をクリックまたは町名を検索してください</span>
         </div>
       </div>
 
-      <!-- タブ -->
-      <div id="tabs">
-        <button class="tab-btn active" data-tab="profile">購買層</button>
-        <button class="tab-btn" data-tab="spending">支出傾向</button>
-        <button class="tab-btn" data-tab="age">年齢分布</button>
+      <!-- 結果パネル -->
+      <div id="result-panel">
+        <div class="panel-handle"></div>
+
+        <!-- 空状態（未選択時） -->
+        <div id="panel-empty">
+          <div class="empty-icon">🗺️</div>
+          <p>地図をクリックするか<br>町名を検索してください</p>
+        </div>
+
+        <!-- エリアヘッダー（選択後） -->
+        <div id="area-header" class="hidden">
+          <div class="area-title-row">
+            <h2 id="area-name"></h2>
+            <div id="income-badge"></div>
+          </div>
+          <div id="area-tags"></div>
+          <div class="area-meta">
+            <span id="area-pop"></span>
+            <span id="area-age"></span>
+          </div>
+        </div>
+
+        <!-- タブ（選択後） -->
+        <div id="tabs" class="hidden">
+          <button class="tab-btn active" data-tab="profile">購買層</button>
+          <button class="tab-btn" data-tab="spending">支出傾向</button>
+          <button class="tab-btn" data-tab="age">年齢分布</button>
+        </div>
+
+        <!-- 購買層タブ -->
+        <div id="tab-profile" class="tab-content hidden">
+          <div class="section-title">推定世帯年収</div>
+          <div id="income-display" class="income-card"></div>
+
+          <div class="section-title">主要年齢層</div>
+          <div id="age-groups"></div>
+
+          <div class="section-title">世帯構成</div>
+          <div id="family-types"></div>
+
+          <div class="section-title">年齢構成比</div>
+          <div id="age-ratio-bars"></div>
+        </div>
+
+        <!-- 支出傾向タブ -->
+        <div id="tab-spending" class="tab-content hidden">
+          <div class="section-title">月間推定支出（世帯平均）</div>
+          <div id="spending-cards"></div>
+          <div class="data-note">※ 総務省「家計調査年報（2022年）」をベースに推計</div>
+        </div>
+
+        <!-- 年齢分布タブ -->
+        <div id="tab-age" class="tab-content hidden">
+          <div class="section-title">年齢分布（人口）</div>
+          <div id="age-chart"></div>
+          <div class="data-note">※ 令和2年国勢調査（東京都統計部）</div>
+        </div>
       </div>
 
-      <!-- 購買層タブ -->
-      <div id="tab-profile" class="tab-content active">
-        <div class="section-title">推定世帯年収</div>
-        <div id="income-display" class="income-card"></div>
-
-        <div class="section-title">主要年齢層</div>
-        <div id="age-groups"></div>
-
-        <div class="section-title">世帯構成</div>
-        <div id="family-types"></div>
-
-        <div class="section-title">年齢構成比</div>
-        <div id="age-ratio-bars"></div>
-      </div>
-
-      <!-- 支出傾向タブ -->
-      <div id="tab-spending" class="tab-content hidden">
-        <div class="section-title">月間推定支出（世帯平均）</div>
-        <div id="spending-cards"></div>
-        <div class="data-note">※ 総務省「家計調査年報（2022年）」をベースに推計</div>
-      </div>
-
-      <!-- 年齢分布タブ -->
-      <div id="tab-age" class="tab-content hidden">
-        <div class="section-title">年齢分布（人口）</div>
-        <div id="age-chart"></div>
-        <div class="data-note">※ 令和2年国勢調査（東京都統計部）</div>
-      </div>
-    </div>
+    </div><!-- /#main-content -->
 
     <!-- ローディング -->
     <div id="loading" class="hidden">

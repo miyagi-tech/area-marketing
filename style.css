@@ -22,6 +22,7 @@
   --radius: 16px;
   --header-h: 60px;
   --search-h: 56px;
+  --panel-w: 380px;
 }
 
 html, body {
@@ -32,6 +33,7 @@ html, body {
   overflow: hidden;
 }
 
+/* ===== アプリ全体レイアウト ===== */
 #app {
   display: flex;
   flex-direction: column;
@@ -54,6 +56,7 @@ html, body {
   justify-content: space-between;
   height: 100%;
   padding: 0 16px;
+  max-width: 100%;
 }
 
 .header-title {
@@ -100,6 +103,7 @@ h1 {
   display: flex;
   gap: 8px;
   align-items: center;
+  max-width: 100%;
 }
 
 #search-input {
@@ -164,10 +168,20 @@ h1 {
   background: var(--primary-light);
 }
 
+/* ===== メインコンテンツエリア（地図＋パネル） ===== */
+#main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* ===== 地図 ===== */
 #map-container {
   flex: 1;
   position: relative;
+  min-width: 0;
   min-height: 0;
 }
 
@@ -196,34 +210,52 @@ h1 {
   opacity: 0;
 }
 
-/* ===== 結果パネル ===== */
+/* ===== 結果パネル（PC：右サイドバー） ===== */
 #result-panel {
   background: var(--surface);
-  border-top: 1px solid var(--border);
-  border-radius: var(--radius) var(--radius) 0 0;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-  max-height: 60vh;
-  overflow-y: auto;
+  border-left: 1px solid var(--border);
+  width: var(--panel-w);
   flex-shrink: 0;
-  transition: transform 0.3s ease;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-}
-
-.panel-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  margin: 10px auto 0;
+  display: flex;
+  flex-direction: column;
 }
 
 #result-panel.hidden {
-  display: none;
+  /* PCでは非表示にせず、プレースホルダーを表示 */
+}
+
+.panel-handle {
+  display: none; /* PCでは不要 */
+}
+
+/* ===== パネル空状態 ===== */
+#panel-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  padding: 40px 20px;
+  text-align: center;
+  gap: 12px;
+}
+
+#panel-empty .empty-icon {
+  font-size: 48px;
+  opacity: 0.4;
+}
+
+#panel-empty p {
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 /* ===== エリアヘッダー ===== */
 #area-header {
-  padding: 12px 16px 8px;
+  padding: 16px 16px 10px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -283,6 +315,7 @@ h1 {
   position: sticky;
   top: 0;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .tab-btn {
@@ -637,32 +670,41 @@ h1 {
 /* ===== ユーティリティ ===== */
 .hidden { display: none !important; }
 
-/* ===== レスポンシブ（タブレット以上） ===== */
-@media (min-width: 768px) {
-  #app {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  #header {
-    width: 100%;
-  }
-
-  #search-bar {
-    width: 100%;
+/* ===== スマホ（768px未満）：上下レイアウト ===== */
+@media (max-width: 767px) {
+  #main-content {
+    flex-direction: column;
   }
 
   #map-container {
     flex: 1;
-    height: calc(100vh - var(--header-h) - var(--search-h));
+    min-height: 200px;
   }
 
   #result-panel {
-    width: 360px;
-    max-height: calc(100vh - var(--header-h) - var(--search-h));
-    border-top: none;
-    border-left: 1px solid var(--border);
-    border-radius: 0;
-    overflow-y: auto;
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    max-height: 55vh;
+    flex-shrink: 0;
+  }
+
+  .panel-handle {
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 10px auto 0;
+  }
+
+  #panel-empty {
+    padding: 24px 20px;
+  }
+
+  #panel-empty .empty-icon {
+    font-size: 36px;
   }
 }
