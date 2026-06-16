@@ -30,12 +30,12 @@
     <!-- 検索バー -->
     <div id="search-bar">
       <div class="search-inner">
-        <input type="text" id="search-input" placeholder="町名を検索（例：三軒茶屋、成城...）" autocomplete="off">
+        <input type="text" id="search-input" placeholder="町名を検索（例：三軒茶屋、下北沢...）" autocomplete="off">
         <button id="history-btn" title="検索履歴">🕐</button>
         <button id="search-btn">🔍</button>
       </div>
       <div id="search-suggestions"></div>
-      <!-- 履歴ドロワー（ボタンで開閉） -->
+      <!-- 履歴ドロワー -->
       <div id="history-drawer" class="hidden">
         <div class="history-drawer-inner">
           <div class="history-label">最近の検索</div>
@@ -44,14 +44,14 @@
       </div>
     </div>
 
-    <!-- メインコンテンツ（地図全幅） -->
+    <!-- メインコンテンツ -->
     <div id="main-content">
 
-      <!-- 地図（全幅） -->
+      <!-- 地図 -->
       <div id="map-container">
         <div id="map"></div>
 
-        <!-- モード切替ボタン（地図上・左上） -->
+        <!-- モード切替ボタン -->
         <div id="mode-buttons">
           <button class="mode-btn active" id="btn-point" onclick="setMode('point')">
             📍 ピンポイント
@@ -68,11 +68,11 @@
 
         <!-- フリーハンド選択用SVGオーバーレイ -->
         <svg id="freehand-svg" xmlns="http://www.w3.org/2000/svg">
-          <path id="freehand-path" fill="rgba(0,194,203,0.10)" stroke="#00c2cb" stroke-width="2" stroke-dasharray="6,4" stroke-linejoin="round" stroke-linecap="round" d=""/>
+          <path id="freehand-path" fill="rgba(0,212,222,0.10)" stroke="#00d4de" stroke-width="2" stroke-dasharray="6,4" stroke-linejoin="round" stroke-linecap="round" d=""/>
         </svg>
       </div>
 
-      <!-- 結果パネル（右サイドバー / スマホ下部） -->
+      <!-- 結果パネル -->
       <div id="result-panel">
         <!-- スマホ用ドラッグハンドル -->
         <div class="panel-handle" id="panel-handle"></div>
@@ -92,7 +92,7 @@
           <p>地図をクリックするか<br>町名を検索してください</p>
         </div>
 
-        <!-- エリアヘッダー（選択後） -->
+        <!-- エリアヘッダー -->
         <div id="area-header" class="hidden">
           <div class="area-title-row">
             <h2 id="area-name"></h2>
@@ -105,18 +105,20 @@
           </div>
         </div>
 
-        <!-- 複数エリア情報（範囲選択時） -->
+        <!-- 複数エリア情報 -->
         <div id="multi-area-info" class="hidden"></div>
 
-        <!-- タブ（選択後） -->
+        <!-- タブ -->
         <div id="tabs" class="hidden">
           <button class="tab-btn active" data-tab="profile">購買層</button>
           <button class="tab-btn" data-tab="spending">支出傾向</button>
           <button class="tab-btn" data-tab="age">年齢分布</button>
+          <button class="tab-btn" data-tab="channel">チャネル</button>
         </div>
 
-        <!-- タブコンテンツ（スワイプ対応ラッパー） -->
+        <!-- タブコンテンツ -->
         <div id="tab-wrapper">
+
           <!-- 購買層タブ -->
           <div id="tab-profile" class="tab-content hidden">
             <div class="tab-inner">
@@ -151,6 +153,14 @@
               <div class="data-note">※ 令和2年国勢調査（東京都統計部）</div>
             </div>
           </div>
+
+          <!-- チャネル分析タブ -->
+          <div id="tab-channel" class="tab-content hidden">
+            <div class="tab-inner">
+              <div id="channel-content"></div>
+            </div>
+          </div>
+
         </div><!-- /#tab-wrapper -->
 
       </div><!-- /#result-panel -->

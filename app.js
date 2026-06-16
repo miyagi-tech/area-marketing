@@ -3,7 +3,7 @@ const SUPABASE_URL = 'https://alwivconpehsnwkfqjez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_c1r0_R5I8hUcbpca04duqA_EWrR3Fw0';
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ===== 年代カラー（若い=明るい） =====
+// ===== 年代カラー =====
 const AGE_COLORS = {
   '0-9':   '#ff6b9d',
   '10-19': '#ff9f43',
@@ -13,6 +13,175 @@ const AGE_COLORS = {
   '50-59': '#a29bfe',
   '60-69': '#636e72',
   '70+':   '#2d3436'
+};
+
+// ===== 別名マップ（通称→正式町名） =====
+const ALIAS_MAP = {
+  '下北沢':   '北沢',
+  '下北':     '北沢',
+  '三茶':     '三軒茶屋',
+  '二子玉川': '玉川',
+  '二子玉':   '玉川',
+  '自由が丘': '奥沢',
+  '自由ヶ丘': '奥沢',
+  '九品仏':   '奥沢',
+  '等々力渓谷': '等々力',
+  '瀬田':     '瀬田',
+  '成城学園': '成城',
+  '成城学園前': '成城',
+  '豪徳寺':   '豪徳寺',
+  '山下':     '豪徳寺',
+  '宮の坂':   '宮坂',
+  '桜上水':   '松原',
+  '東松原':   '松原',
+  '明大前':   '松原',
+  '梅ヶ丘':   '梅丘',
+  '梅が丘':   '梅丘',
+  '経堂':     '経堂',
+  '千歳烏山': '南烏山',
+  '烏山':     '南烏山',
+  '芦花公園': '芦花公園',
+  '用賀':     '用賀',
+  '砧公園':   '砧公園',
+  '岡本':     '岡本',
+  '喜多見':   '喜多見',
+  '上野毛':   '上野毛',
+  '尾山台':   '尾山台',
+  '奥沢':     '奥沢',
+  '野毛':     '野毛',
+  '深沢':     '深沢',
+  '駒沢':     '駒沢',
+  '駒沢公園': '駒沢',
+  '桜新町':   '桜新町',
+  '弦巻':     '弦巻',
+  '世田谷':   '世田谷',
+  '太子堂':   '太子堂',
+  '池尻':     '池尻',
+  '三宿':     '三宿',
+  '代田':     '代田',
+  '代沢':     '代沢',
+  '北沢':     '北沢',
+  '上馬':     '上馬',
+  '下馬':     '下馬',
+  '野沢':     '野沢',
+  '松原':     '松原',
+  '赤堤':     '赤堤',
+  '羽根木':   '羽根木',
+  '大原':     '大原',
+  '宮坂':     '宮坂',
+  '梅丘':     '梅丘',
+  '松沢':     '松沢',
+  '成城':     '成城',
+  '祖師谷':   '祖師谷',
+  '千歳台':   '千歳台',
+  '砧':       '砧',
+  '大蔵':     '大蔵',
+  '鎌田':     '鎌田',
+  '宇奈根':   '宇奈根',
+  '給田':     '給田',
+  '南烏山':   '南烏山',
+  '北烏山':   '北烏山',
+  '粕谷':     '粕谷',
+  '八幡山':   '八幡山',
+  '上北沢':   '上北沢',
+  '上祖師谷': '上祖師谷',
+  '玉川':     '玉川',
+  '玉川台':   '玉川台',
+  '玉川田園調布': '玉川田園調布',
+  '玉堤':     '玉堤',
+  '中町':     '中町',
+  '上用賀':   '上用賀',
+  '桜':       '桜',
+  '新町':     '新町'
+};
+
+// ===== 世田谷区 近隣商業施設データ =====
+const FACILITIES_DB = [
+  // ショッピングモール・SC
+  { name: '二子玉川ライズ S.C.', type: 'ショッピングセンター', grade: 'premium', icon: '🏬', lat: 35.6097, lng: 139.6270, anchor: '玉川' },
+  { name: 'キャロットタワー（三軒茶屋）', type: '複合商業施設', grade: 'standard', icon: '🏢', lat: 35.6440, lng: 139.6700, anchor: '三軒茶屋' },
+  { name: 'シモキタエキマエ商店街', type: '商店街・複合施設', grade: 'standard', icon: '🏘️', lat: 35.6580, lng: 139.6620, anchor: '北沢' },
+  { name: '成城コルティ', type: 'ショッピングセンター', grade: 'premium', icon: '🏬', lat: 35.6310, lng: 139.5990, anchor: '成城' },
+  { name: 'イトーヨーカドー祖師谷大蔵店', type: 'スーパー・SC', grade: 'daily', icon: '🛒', lat: 35.6350, lng: 139.6090, anchor: '祖師谷' },
+  { name: '東急ストア 経堂店', type: 'スーパー', grade: 'daily', icon: '🛒', lat: 35.6450, lng: 139.6480, anchor: '経堂' },
+  { name: '東急ストア 桜新町店', type: 'スーパー', grade: 'daily', icon: '🛒', lat: 35.6340, lng: 139.6650, anchor: '桜新町' },
+  { name: 'マルエツ 用賀店', type: 'スーパー', grade: 'daily', icon: '🛒', lat: 35.6190, lng: 139.6310, anchor: '用賀' },
+  { name: 'ライフ 等々力店', type: 'スーパー', grade: 'daily', icon: '🛒', lat: 35.6060, lng: 139.6440, anchor: '等々力' },
+  { name: '小田急マルシェ 千歳烏山', type: '駅ビル商業施設', grade: 'standard', icon: '🏪', lat: 35.6510, lng: 139.5990, anchor: '南烏山' },
+  { name: 'ボーノ相模大野（参考）', type: 'ショッピングモール', grade: 'standard', icon: '🏬', lat: 35.6400, lng: 139.6150, anchor: '千歳台' },
+  // 百貨店
+  { name: '東急百貨店 二子玉川店', type: '百貨店', grade: 'premium', icon: '🏛️', lat: 35.6097, lng: 139.6260, anchor: '玉川' },
+  { name: '小田急百貨店 新宿（近隣）', type: '百貨店（近隣）', grade: 'premium', icon: '🏛️', lat: 35.6900, lng: 139.7000, anchor: '北沢' },
+  { name: '渋谷ヒカリエ（近隣）', type: '複合百貨店（近隣）', grade: 'premium', icon: '🏛️', lat: 35.6590, lng: 139.7030, anchor: '三軒茶屋' },
+  // アウトレット・大型専門店
+  { name: 'コーナン 世田谷店', type: 'ホームセンター', grade: 'daily', icon: '🔨', lat: 35.6430, lng: 139.6560, anchor: '世田谷' },
+  { name: 'ユニクロ 三軒茶屋店', type: 'アパレル専門店', grade: 'standard', icon: '👔', lat: 35.6440, lng: 139.6700, anchor: '三軒茶屋' },
+  { name: 'ニトリ 経堂店', type: 'インテリア専門店', grade: 'standard', icon: '🛋️', lat: 35.6450, lng: 139.6480, anchor: '経堂' },
+  { name: 'TSUTAYA 下北沢店', type: 'エンタメ複合店', grade: 'standard', icon: '🎵', lat: 35.6580, lng: 139.6620, anchor: '北沢' },
+  { name: 'ビックカメラ 二子玉川店', type: '家電量販店', grade: 'standard', icon: '📱', lat: 35.6097, lng: 139.6270, anchor: '玉川' },
+];
+
+// ===== 世田谷区 町代表座標 =====
+const TOWN_COORDS = {
+  '池尻':       [35.6520, 139.6810],
+  '三宿':       [35.6490, 139.6780],
+  '太子堂':     [35.6450, 139.6700],
+  '三軒茶屋':   [35.6440, 139.6690],
+  '下馬':       [35.6480, 139.6860],
+  '野沢':       [35.6410, 139.6840],
+  '弦巻':       [35.6380, 139.6750],
+  '世田谷':     [35.6430, 139.6560],
+  '桜':         [35.6380, 139.6620],
+  '新町':       [35.6330, 139.6600],
+  '桜新町':     [35.6340, 139.6650],
+  '深沢':       [35.6280, 139.6700],
+  '駒沢':       [35.6390, 139.6900],
+  '上馬':       [35.6450, 139.6820],
+  '代田':       [35.6540, 139.6640],
+  '代沢':       [35.6510, 139.6600],
+  '北沢':       [35.6580, 139.6620],
+  '松原':       [35.6540, 139.6540],
+  '赤堤':       [35.6510, 139.6480],
+  '羽根木':     [35.6490, 139.6540],
+  '大原':       [35.6570, 139.6540],
+  '経堂':       [35.6450, 139.6480],
+  '宮坂':       [35.6400, 139.6440],
+  '豪徳寺':     [35.6420, 139.6490],
+  '梅丘':       [35.6380, 139.6540],
+  '松沢':       [35.6580, 139.6490],
+  '成城':       [35.6310, 139.5990],
+  '祖師谷':     [35.6350, 139.6090],
+  '千歳台':     [35.6400, 139.6150],
+  '砧':         [35.6280, 139.6150],
+  '砧公園':     [35.6260, 139.6050],
+  '大蔵':       [35.6230, 139.6100],
+  '岡本':       [35.6200, 139.6020],
+  '鎌田':       [35.6170, 139.6140],
+  '喜多見':     [35.6230, 139.5980],
+  '宇奈根':     [35.6140, 139.5970],
+  '給田':       [35.6380, 139.5990],
+  '南烏山':     [35.6510, 139.5990],
+  '北烏山':     [35.6570, 139.5980],
+  '粕谷':       [35.6480, 139.6060],
+  '八幡山':     [35.6520, 139.6100],
+  '上北沢':     [35.6560, 139.6150],
+  '芦花公園':   [35.6510, 139.6020],
+  '上祖師谷':   [35.6390, 139.6010],
+  '玉川':       [35.6100, 139.6360],
+  '瀬田':       [35.6130, 139.6280],
+  '野毛':       [35.6080, 139.6300],
+  '上野毛':     [35.6060, 139.6340],
+  '等々力':     [35.6060, 139.6440],
+  '中町':       [35.6130, 139.6440],
+  '上用賀':     [35.6220, 139.6340],
+  '用賀':       [35.6190, 139.6310],
+  '玉川台':     [35.6140, 139.6200],
+  '玉川田園調布': [35.5970, 139.6360],
+  '尾山台':     [35.6050, 139.6520],
+  '奥沢':       [35.6030, 139.6620],
+  '玉堤':       [35.5990, 139.6450],
+  '若林':       [35.6480, 139.6640],
+  '桜丘':       [35.6350, 139.6560]
 };
 
 // ===== 状態管理 =====
@@ -25,7 +194,7 @@ let searchHistory = [];
 let panelState = 'closed';
 let isFreehandDrawing = false;
 let freehandPoints = [];
-let touchStartY = 0;
+let currentAreaData = null; // 現在表示中のエリアデータ
 
 // ===== 初期化 =====
 document.addEventListener('DOMContentLoaded', async () => {
@@ -49,10 +218,7 @@ function initMap() {
     maxZoom: 18
   }).addTo(map);
 
-  // ズームコントロールを右下に配置
   L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-  // 地図クリック（ポイントモード）
   map.on('click', onMapClick);
 }
 
@@ -67,7 +233,6 @@ function initUI() {
   document.addEventListener('click', e => {
     if (!e.target.closest('#search-bar')) {
       document.getElementById('search-suggestions').innerHTML = '';
-      // 履歴ドロワーも閉じる
       document.getElementById('history-drawer').classList.add('hidden');
     }
   });
@@ -75,17 +240,17 @@ function initUI() {
   // 履歴ボタン
   document.getElementById('history-btn').addEventListener('click', e => {
     e.stopPropagation();
-    const drawer = document.getElementById('history-drawer');
-    drawer.classList.toggle('hidden');
+    document.getElementById('history-drawer').classList.toggle('hidden');
   });
 
-  // タブ切替（クリック）
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  // タブ切替（イベント委譲）
+  document.getElementById('result-panel').addEventListener('click', e => {
+    const btn = e.target.closest('.tab-btn');
+    if (btn && btn.dataset.tab) switchTab(btn.dataset.tab);
   });
 
   // タブスワイプ（左右）
-  const tabOrder = ['profile', 'spending', 'age'];
+  const tabOrder = ['profile', 'spending', 'age', 'channel'];
   let tabTouchStartX = 0;
   const tabWrapper = document.getElementById('tab-wrapper');
   if (tabWrapper) {
@@ -94,12 +259,12 @@ function initUI() {
     }, { passive: true });
     tabWrapper.addEventListener('touchend', e => {
       const dx = e.changedTouches[0].clientX - tabTouchStartX;
-      if (Math.abs(dx) < 40) return;
+      if (Math.abs(dx) < 50) return;
       const activeBtn = document.querySelector('.tab-btn.active');
       if (!activeBtn) return;
       const idx = tabOrder.indexOf(activeBtn.dataset.tab);
-      if (dx < -40 && idx < tabOrder.length - 1) switchTab(tabOrder[idx + 1]);
-      else if (dx > 40 && idx > 0) switchTab(tabOrder[idx - 1]);
+      if (dx < -50 && idx < tabOrder.length - 1) switchTab(tabOrder[idx + 1]);
+      else if (dx > 50 && idx > 0) switchTab(tabOrder[idx - 1]);
     }, { passive: true });
   }
 
@@ -122,19 +287,16 @@ function initUI() {
   panel.addEventListener('touchend', e => {
     const dy = e.changedTouches[0].clientY - panelTouchStartY;
     const dx = Math.abs(e.changedTouches[0].clientX - panelTouchStartX);
-    // 縦スワイプ（横移動が少ない場合のみ）
-    if (dx > 40) return;
+    if (dx > 50) return; // 横スワイプはタブ切替に使う
     if (dy > 60) {
-      // 下スワイプ: open→peek→closed
       if (panelState === 'open') setPanelState('peek');
-      else if (panelState === 'peek') setPanelState('closed');
+      else if (panelState === 'peek') resetToHome();
     } else if (dy < -60) {
-      // 上スワイプ: closed→open, peek→open
       if (panelState === 'peek' || panelState === 'closed') setPanelState('open');
     }
   }, { passive: true });
 
-  // フリーハンド描画イベント（地図コンテナ）
+  // フリーハンド描画イベント
   const mapEl = document.getElementById('map');
   mapEl.addEventListener('mousedown', onFreehandStart);
   mapEl.addEventListener('mousemove', onFreehandMove);
@@ -151,11 +313,9 @@ function setPanelState(state) {
   if (state === 'open') panel.classList.add('open');
   else if (state === 'peek') panel.classList.add('peek');
   panelState = state;
-  // ※ closed時のリセットは resetToHome() で明示的に行う
-  //   スワイプで閉じた場合は地図のマーカー・ポリゴンを残す
 }
 
-// ===== 完全リセット（再検索ボタン用） =====
+// ===== 完全リセット（再検索ボタン・スワイプで完全に閉じた時） =====
 function resetToHome() {
   setPanelState('closed');
   document.getElementById('panel-empty').classList.remove('hidden');
@@ -165,11 +325,10 @@ function resetToHome() {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
   document.getElementById('map-hint').classList.remove('hidden');
   document.getElementById('search-input').value = '';
-  // マーカー・ポリゴンをクリア
   if (currentMarker) { map.removeLayer(currentMarker); currentMarker = null; }
   if (freehandPolygon) { map.removeLayer(freehandPolygon); freehandPolygon = null; }
-  // ピンポイントモードに戻す
   setMode('point');
+  currentAreaData = null;
 }
 
 // ===== モード切替 =====
@@ -177,7 +336,6 @@ function setMode(mode) {
   currentMode = mode;
   document.getElementById('btn-point').classList.toggle('active', mode === 'point');
   document.getElementById('btn-area').classList.toggle('active', mode === 'area');
-
   const hint = document.getElementById('hint-text');
   if (mode === 'point') {
     hint.textContent = '📍 地図をクリックまたは町名を検索してください';
@@ -230,7 +388,7 @@ async function onMapClick(e) {
     currentMarker = L.marker([lat, lng], {
       icon: L.divIcon({
         className: '',
-        html: `<div style="background:#00c2cb;color:#0d0f14;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 10px rgba(0,194,203,0.5);font-family:Outfit,sans-serif">${townName || '?'}</div>`,
+        html: `<div style="background:#00d4de;color:#0d0f14;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 12px rgba(0,212,222,0.5);font-family:Outfit,sans-serif">${townName || '?'}</div>`,
         iconAnchor: [0, 0]
       })
     }).addTo(map);
@@ -278,10 +436,14 @@ function extractTownName(geo) {
   return null;
 }
 
-// ===== エリア検索 =====
+// ===== エリア検索（エイリアス対応） =====
 function findArea(name) {
   if (!name) return null;
-  return allAreas.find(a => a.town_name === name)
+  // エイリアスで正式名に変換
+  const resolved = ALIAS_MAP[name] || name;
+  return allAreas.find(a => a.town_name === resolved)
+    || allAreas.find(a => a.town_name === name)
+    || allAreas.find(a => a.town_name.includes(resolved) || resolved.includes(a.town_name))
     || allAreas.find(a => a.town_name.includes(name) || name.includes(a.town_name))
     || null;
 }
@@ -291,6 +453,7 @@ async function doSearch() {
   const q = document.getElementById('search-input').value.trim();
   if (!q) return;
   document.getElementById('search-suggestions').innerHTML = '';
+  document.getElementById('history-drawer').classList.add('hidden');
   document.getElementById('map-hint').classList.add('hidden');
 
   const area = findArea(q);
@@ -310,13 +473,19 @@ async function doSearch() {
       currentMarker = L.marker([lat, lng], {
         icon: L.divIcon({
           className: '',
-          html: `<div style="background:#00c2cb;color:#0d0f14;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 10px rgba(0,194,203,0.5);font-family:Outfit,sans-serif">${area.town_name}</div>`,
+          html: `<div style="background:#00d4de;color:#0d0f14;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 12px rgba(0,212,222,0.5);font-family:Outfit,sans-serif">${area.town_name}</div>`,
           iconAnchor: [0, 0]
         })
       }).addTo(map);
+    } else {
+      // 座標が取れなくてもTOWN_COORDSから表示
+      const coord = TOWN_COORDS[area.town_name];
+      if (coord) map.setView(coord, 15);
     }
   } catch (e) {
     console.warn('座標取得失敗:', e);
+    const coord = TOWN_COORDS[area.town_name];
+    if (coord) map.setView(coord, 15);
   } finally {
     showLoading(false);
   }
@@ -328,27 +497,47 @@ function onSearchInput(e) {
   const q = e.target.value.trim();
   const box = document.getElementById('search-suggestions');
   if (!q) { box.innerHTML = ''; return; }
-  const matches = allAreas.filter(a => a.town_name.includes(q)).slice(0, 8);
-  box.innerHTML = matches.map(a =>
-    `<div class="suggestion-item" onclick="quickSelect('${a.town_name}')">📍 ${a.town_name} <span style="color:#4a5568;font-size:11px">${a.income_label}</span></div>`
+  // エイリアス含めて検索
+  const resolved = ALIAS_MAP[q] || q;
+  const matches = allAreas.filter(a =>
+    a.town_name.includes(q) ||
+    a.town_name.includes(resolved) ||
+    q.includes(a.town_name)
+  ).slice(0, 8);
+  // エイリアスからも候補を追加
+  const aliasMatches = Object.entries(ALIAS_MAP)
+    .filter(([alias, real]) => alias.includes(q) && !matches.find(m => m.town_name === real))
+    .map(([alias, real]) => {
+      const area = allAreas.find(a => a.town_name === real);
+      return area ? { ...area, displayName: `${alias}（${real}）` } : null;
+    })
+    .filter(Boolean)
+    .slice(0, 3);
+
+  const allMatches = [...matches, ...aliasMatches].slice(0, 8);
+  box.innerHTML = allMatches.map(a =>
+    `<div class="suggestion-item" onclick="quickSelect('${a.displayName ? a.town_name : a.town_name}')">📍 ${a.displayName || a.town_name} <span style="color:#6b7a99;font-size:11px">${a.income_label || ''}</span></div>`
   ).join('');
 }
 
 function quickSelect(name) {
   document.getElementById('search-input').value = name;
   document.getElementById('search-suggestions').innerHTML = '';
+  document.getElementById('history-drawer').classList.add('hidden');
   const area = findArea(name);
   if (area) showAreaResult(area);
 }
 
 // ===== エリア結果表示（1エリア） =====
 function showAreaResult(area) {
+  currentAreaData = area;
   addHistory(area.town_name);
   renderAreaHeader(area);
   document.getElementById('multi-area-info').classList.add('hidden');
   renderProfileTab(area);
   renderSpendingTab(area);
   renderAgeTab(area);
+  renderChannelTab(area);
   document.getElementById('panel-empty').classList.add('hidden');
   document.getElementById('area-header').classList.remove('hidden');
   document.getElementById('tabs').classList.remove('hidden');
@@ -370,14 +559,12 @@ function renderAreaHeader(area) {
 
   const tags = area.area_tags || [];
   document.getElementById('area-tags').innerHTML = tags.map(t => `<span class="area-tag">${t}</span>`).join('');
-
   document.getElementById('area-pop').textContent = `人口 ${(area.pop_total || 0).toLocaleString()}人`;
   document.getElementById('area-age').textContent = `平均年齢 ${area.avg_age}歳`;
 }
 
 // ===== 購買層タブ =====
 function renderProfileTab(area) {
-  // 年収カード
   document.getElementById('income-display').innerHTML = `
     <div class="income-amount">${(area.estimated_income || 0).toLocaleString()}<span>万円</span></div>
     <div class="income-sub">
@@ -386,13 +573,11 @@ function renderProfileTab(area) {
     </div>
   `;
 
-  // 主要年齢層
   const ageGroups = area.dominant_age_groups || [];
   document.getElementById('age-groups').innerHTML = ageGroups.map((g, i) =>
     `<div class="age-group-badge ${i === 0 ? 'rank1' : ''}">${i === 0 ? '🥇' : '🥈'} ${g}</div>`
   ).join('');
 
-  // 家族構成
   const families = area.family_types || [];
   document.getElementById('family-types').innerHTML = families.map(f => `
     <div class="family-item">
@@ -402,7 +587,6 @@ function renderProfileTab(area) {
     </div>
   `).join('');
 
-  // 年齢構成比
   document.getElementById('age-ratio-bars').innerHTML = `
     <div class="ratio-row">
       <div class="ratio-label">子ども（0-14歳）</div>
@@ -442,7 +626,7 @@ function renderSpendingTab(area) {
   `).join('');
 }
 
-// ===== 年齢分布タブ（年代別カラー） =====
+// ===== 年齢分布タブ =====
 function renderAgeTab(area) {
   const dist = area.age_dist || {};
   const keys = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70+'];
@@ -468,6 +652,177 @@ function renderAgeTab(area) {
       </div>
     `;
   }).join('');
+}
+
+// ===== チャネル分析タブ =====
+function renderChannelTab(area) {
+  const container = document.getElementById('channel-content');
+  if (!container) return;
+
+  const income = area.estimated_income || 500;
+  const avgAge = parseFloat(area.avg_age) || 40;
+  const elderly = area.elderly_ratio || 20;
+  const child = area.child_ratio || 12;
+  const working = area.working_ratio || 68;
+  const coord = TOWN_COORDS[area.town_name];
+
+  // 近隣施設を距離でソート
+  let nearbyFacilities = [];
+  if (coord) {
+    nearbyFacilities = FACILITIES_DB.map(f => ({
+      ...f,
+      dist: calcDistKm(coord[0], coord[1], f.lat, f.lng)
+    }))
+    .filter(f => f.dist < 5.0)
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, 8);
+  }
+
+  // チャネルマッチスコア計算
+  const channels = calcChannelScores(area, nearbyFacilities);
+
+  let html = '';
+
+  // チャネルマッチ確率
+  html += `<div class="channel-section-title">チャネルマッチ確率</div>`;
+  html += `<div class="channel-match-summary">
+    <div class="match-title">この立地に合うチャネル（推定マッチ率）</div>`;
+  channels.forEach(ch => {
+    const barClass = ch.score >= 70 ? 'high' : ch.score >= 45 ? 'mid' : 'low';
+    html += `
+      <div class="channel-match-row">
+        <div class="channel-match-label">${ch.name}</div>
+        <div class="channel-match-bar-wrap">
+          <div class="channel-match-bar ${barClass}" style="width:${ch.score}%"></div>
+        </div>
+        <div class="channel-match-pct">${ch.score}%</div>
+      </div>`;
+  });
+  html += `</div>`;
+
+  // 推奨チャネル
+  html += `<div class="channel-section-title">推奨チャネル</div>`;
+  channels.slice(0, 3).forEach((ch, i) => {
+    html += `
+      <div class="recommend-card ${i === 0 ? 'top-pick' : ''}">
+        <div class="recommend-header">
+          <div class="recommend-name">${i === 0 ? '⭐ ' : ''}${ch.name}</div>
+          <div class="recommend-score">${ch.score}%</div>
+        </div>
+        <div class="recommend-desc">${ch.reason}</div>
+      </div>`;
+  });
+
+  // 近隣商業施設
+  html += `<div class="channel-section-title">近隣商業施設（半径5km）</div>`;
+  if (nearbyFacilities.length === 0) {
+    html += `<div style="color:var(--text-dim);font-size:13px;padding:8px 0">施設データが見つかりませんでした</div>`;
+  } else {
+    nearbyFacilities.forEach(f => {
+      const distStr = f.dist < 1 ? `${Math.round(f.dist * 1000)}m` : `${f.dist.toFixed(1)}km`;
+      html += `
+        <div class="facility-card">
+          <div class="facility-icon">${f.icon}</div>
+          <div class="facility-info">
+            <div class="facility-name">${f.name}</div>
+            <div class="facility-type">${f.type}</div>
+            <div class="facility-meta">
+              <div class="facility-dist">📍 ${distStr}</div>
+              <div class="facility-grade ${f.grade}">${f.grade === 'premium' ? 'プレミアム' : f.grade === 'standard' ? 'スタンダード' : 'デイリー'}</div>
+            </div>
+          </div>
+        </div>`;
+    });
+  }
+
+  html += `<div class="data-note">※ 施設データは代表的な施設を掲載。距離は直線距離。チャネルマッチ率は人口統計・年収・支出傾向から算出した推計値です。</div>`;
+
+  container.innerHTML = html;
+}
+
+// ===== 距離計算（ハバーサイン） =====
+function calcDistKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ===== チャネルスコア計算 =====
+function calcChannelScores(area, facilities) {
+  const income = area.estimated_income || 500;
+  const avgAge = parseFloat(area.avg_age) || 40;
+  const elderly = area.elderly_ratio || 20;
+  const child = area.child_ratio || 12;
+  const working = area.working_ratio || 68;
+  const families = area.family_types || [];
+  const familyRatio = families.find(f => f.type === 'ファミリー世帯')?.ratio || 40;
+  const singleRatio = families.find(f => f.type === '単身・DINKS')?.ratio || 35;
+  const hasPremiumNearby = facilities.some(f => f.grade === 'premium' && f.dist < 3);
+
+  const channels = [
+    {
+      name: 'ハイエンド専門店',
+      score: Math.min(95, Math.round(
+        (income >= 800 ? 40 : income >= 600 ? 25 : 10) +
+        (hasPremiumNearby ? 20 : 5) +
+        (avgAge >= 40 && avgAge <= 60 ? 20 : 10) +
+        (singleRatio > 40 ? 15 : 10)
+      )),
+      reason: `推定年収${income}万円帯の高所得層が多く、プレミアム施設への近接性も${hasPremiumNearby ? '高い' : '中程度'}。高単価商品・ブランド品の需要が見込める。`
+    },
+    {
+      name: 'ライフスタイルSC',
+      score: Math.min(95, Math.round(
+        (income >= 600 && income <= 900 ? 35 : 20) +
+        (familyRatio > 45 ? 25 : 15) +
+        (working > 60 ? 20 : 10) +
+        (hasPremiumNearby ? 10 : 15)
+      )),
+      reason: `ファミリー世帯比率${familyRatio}%、生産年齢層${working}%と、週末利用型のSCに適した人口構成。食品・日用品・ファッションの複合需要が高い。`
+    },
+    {
+      name: 'コンビニ・ドラッグストア',
+      score: Math.min(95, Math.round(
+        (singleRatio > 40 ? 30 : 20) +
+        (working > 65 ? 25 : 15) +
+        (avgAge < 45 ? 20 : 10) +
+        15
+      )),
+      reason: `単身・DINKS比率${singleRatio}%と働き世代が多く、日常的な近距離購買ニーズが高い。時間効率重視の消費行動が特徴。`
+    },
+    {
+      name: 'EC・D2C',
+      score: Math.min(95, Math.round(
+        (income >= 600 ? 25 : 15) +
+        (avgAge < 45 ? 30 : avgAge < 55 ? 20 : 10) +
+        (singleRatio > 40 ? 20 : 10) +
+        10
+      )),
+      reason: `平均年齢${avgAge}歳とデジタルリテラシーが高い層が多い。EC利用率が高く、定期購入・サブスクリプション型サービスとの相性が良い。`
+    },
+    {
+      name: 'シニア向け専門店',
+      score: Math.min(95, Math.round(
+        (elderly > 30 ? 40 : elderly > 20 ? 25 : 10) +
+        (income >= 500 ? 20 : 10) +
+        (avgAge > 50 ? 25 : 10)
+      )),
+      reason: `高齢者比率${elderly}%、平均年齢${avgAge}歳。健康食品・介護用品・趣味関連など、シニア向け商材の需要が${elderly > 25 ? '高い' : '中程度'}。`
+    },
+    {
+      name: '子育て・教育関連',
+      score: Math.min(95, Math.round(
+        (child > 15 ? 40 : child > 10 ? 25 : 10) +
+        (familyRatio > 45 ? 30 : 15) +
+        (income >= 500 ? 15 : 5)
+      )),
+      reason: `子ども比率${child}%、ファミリー世帯${familyRatio}%。学習塾・習い事・ベビー用品・知育玩具など教育関連チャネルの需要が${child > 12 ? '見込める' : '限定的'}。`
+    }
+  ];
+
+  return channels.sort((a, b) => b.score - a.score);
 }
 
 // ===== 複数エリア平均表示 =====
@@ -499,6 +854,7 @@ function showMultiAreaResult(areas) {
     age_dist: mergeAgeDist(areas)
   };
 
+  currentAreaData = merged;
   renderAreaHeader(merged);
 
   const multiInfo = document.getElementById('multi-area-info');
@@ -508,6 +864,7 @@ function showMultiAreaResult(areas) {
   renderProfileTab(merged);
   renderSpendingTab(merged);
   renderAgeTab(merged);
+  renderChannelTab(merged);
 
   document.getElementById('panel-empty').classList.add('hidden');
   document.getElementById('area-header').classList.remove('hidden');
@@ -532,8 +889,7 @@ function onFreehandStart(e) {
   e.preventDefault();
   isFreehandDrawing = true;
   freehandPoints = [[e.clientX, e.clientY]];
-  const svg = document.getElementById('freehand-svg');
-  svg.classList.add('active');
+  document.getElementById('freehand-svg').classList.add('active');
   updateSvgPath();
 }
 
@@ -595,8 +951,8 @@ function finishFreehand() {
 
   if (freehandPolygon) map.removeLayer(freehandPolygon);
   freehandPolygon = L.polygon(latLngs, {
-    color: '#00c2cb',
-    fillColor: '#00c2cb',
+    color: '#00d4de',
+    fillColor: '#00d4de',
     fillOpacity: 0.08,
     weight: 2,
     dashArray: '6,4'
@@ -634,67 +990,6 @@ function isPointInPolygon(pt, polygon) {
   return inside;
 }
 
-// ===== 世田谷区 町代表座標 =====
-const TOWN_COORDS = {
-  '池尻':       [35.6520, 139.6810],
-  '三宿':       [35.6490, 139.6780],
-  '太子堂':     [35.6450, 139.6700],
-  '三軒茶屋':   [35.6440, 139.6690],
-  '下馬':       [35.6480, 139.6860],
-  '野沢':       [35.6410, 139.6840],
-  '弦巻':       [35.6380, 139.6750],
-  '世田谷':     [35.6430, 139.6560],
-  '桜':         [35.6380, 139.6620],
-  '新町':       [35.6330, 139.6600],
-  '桜新町':     [35.6340, 139.6650],
-  '深沢':       [35.6280, 139.6700],
-  '駒沢':       [35.6390, 139.6900],
-  '上馬':       [35.6450, 139.6820],
-  '代田':       [35.6540, 139.6640],
-  '代沢':       [35.6510, 139.6600],
-  '北沢':       [35.6580, 139.6620],
-  '松原':       [35.6540, 139.6540],
-  '赤堤':       [35.6510, 139.6480],
-  '羽根木':     [35.6490, 139.6540],
-  '大原':       [35.6570, 139.6540],
-  '経堂':       [35.6450, 139.6480],
-  '宮坂':       [35.6400, 139.6440],
-  '豪徳寺':     [35.6420, 139.6490],
-  '梅丘':       [35.6380, 139.6540],
-  '松沢':       [35.6580, 139.6490],
-  '成城':       [35.6310, 139.5990],
-  '祖師谷':     [35.6350, 139.6090],
-  '千歳台':     [35.6400, 139.6150],
-  '砧':         [35.6280, 139.6150],
-  '砧公園':     [35.6260, 139.6050],
-  '大蔵':       [35.6230, 139.6100],
-  '岡本':       [35.6200, 139.6020],
-  '鎌田':       [35.6170, 139.6140],
-  '喜多見':     [35.6230, 139.5980],
-  '宇奈根':     [35.6140, 139.5970],
-  '給田':       [35.6380, 139.5990],
-  '南烏山':     [35.6510, 139.5990],
-  '北烏山':     [35.6570, 139.5980],
-  '粕谷':       [35.6480, 139.6060],
-  '八幡山':     [35.6520, 139.6100],
-  '上北沢':     [35.6560, 139.6150],
-  '芦花公園':   [35.6510, 139.6020],
-  '上祖師谷':   [35.6390, 139.6010],
-  '玉川':       [35.6100, 139.6360],
-  '瀬田':       [35.6130, 139.6280],
-  '野毛':       [35.6080, 139.6300],
-  '上野毛':     [35.6060, 139.6340],
-  '等々力':     [35.6060, 139.6440],
-  '中町':       [35.6130, 139.6440],
-  '上用賀':     [35.6220, 139.6340],
-  '用賀':       [35.6190, 139.6310],
-  '玉川台':     [35.6140, 139.6200],
-  '玉川田園調布': [35.5970, 139.6360],
-  '尾山台':     [35.6050, 139.6520],
-  '奥沢':       [35.6030, 139.6620],
-  '玉堤':       [35.5990, 139.6450]
-};
-
 // ===== タブ切替 =====
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -712,7 +1007,7 @@ function renderHistory() {
   const list = document.getElementById('history-list');
   if (!list) return;
   if (!searchHistory.length) {
-    list.innerHTML = '<div style="color:#4a5568;font-size:12px;padding:4px 0">履歴はありません</div>';
+    list.innerHTML = '<div style="color:var(--text-dim);font-size:12px;padding:4px 0">履歴はありません</div>';
     return;
   }
   list.innerHTML = searchHistory.map(h =>
