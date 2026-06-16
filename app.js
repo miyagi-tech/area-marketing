@@ -364,7 +364,7 @@ function initMap() {
 
   // スマホではパネルと被らないよう左下、PCは右下
   const isMobile = window.innerWidth <= 768;
-  L.control.zoom({ position: isMobile ? 'bottomleft' : 'bottomright' }).addTo(map); 
+  L.control.zoom({ position: isMobile ? 'bottomleft' : 'bottomright' }).addTo(map);
   map.on('click', onMapClick);
 }
 
