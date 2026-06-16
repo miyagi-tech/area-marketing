@@ -341,15 +341,14 @@ function initUI() {
   document.getElementById('search-input').addEventListener('input', onSearchInput);
   // 検索バー外クリックで候補・履歴を閉じる
   document.addEventListener('click', e => {
-    if (!e.target.closest('#search-bar') && !e.target.closest('#history-drawer')) {
+    if (!e.target.closest('#search-bar') && !e.target.closest('#history-drawer') && !e.target.closest('#history-btn')) {
       document.getElementById('search-suggestions').innerHTML = '';
       document.getElementById('history-drawer').classList.add('hidden');
     }
   });
 
-  // 履歴ボタン: mousedownで開閉（clickより先に発火してdocument.clickと競合しない）
-  document.getElementById('history-btn').addEventListener('mousedown', e => {
-    e.preventDefault();
+  // 履歴ボタン: clickで開閉（document.clickのhistory-btn除外条件と組み合わせて競合回避）
+  document.getElementById('history-btn').addEventListener('click', e => {
     e.stopPropagation();
     const drawer = document.getElementById('history-drawer');
     drawer.classList.toggle('hidden');
@@ -637,27 +636,50 @@ function onSearchInput(e) {
   const q = e.target.value.trim();
   const box = document.getElementById('search-suggestions');
   if (!q) { box.innerHTML = ''; return; }
-  // エイリアス含めて検索
-  const resolved = ALIAS_MAP[q] || q;
-  const matches = allAreas.filter(a =>
-    a.town_name.includes(q) ||
-    a.town_name.includes(resolved) ||
-    q.includes(a.town_name)
-  ).slice(0, 8);
-  // エイリアスからも候補を追加
-  const aliasMatches = Object.entries(ALIAS_MAP)
-    .filter(([alias, real]) => alias.includes(q) && !matches.find(m => m.town_name === real))
-    .map(([alias, real]) => {
-      const area = allAreas.find(a => a.town_name === real);
-      return area ? { ...area, displayName: `${alias}（${real}）` } : null;
-    })
-    .filter(Boolean)
-    .slice(0, 3);
 
-  const allMatches = [...matches, ...aliasMatches].slice(0, 8);
-  box.innerHTML = allMatches.map(a =>
-    `<div class="suggestion-item" onclick="quickSelect('${a.displayName ? a.town_name : a.town_name}')">📍 ${a.displayName || a.town_name} <span style="color:#6b7a99;font-size:11px">${a.income_label || ''}</span></div>`
-  ).join('');
+  // 1) 町名の部分一致（前方・中間・後方すべて）
+  const directMatches = allAreas.filter(a => a.town_name.includes(q));
+
+  // 2) エイリアスキーの部分一致 → 正式町名に変換して候補追加
+  //    例: 「門前」→ alias「門前仲町」→ 正式「富岡」
+  const seenTowns = new Set(directMatches.map(a => a.town_name));
+  const aliasMatches = [];
+  for (const [alias, real] of Object.entries(ALIAS_MAP)) {
+    if (!alias.includes(q)) continue;
+    const area = allAreas.find(a => a.town_name === real);
+    if (!area) continue;
+    if (seenTowns.has(real)) {
+      // 既に直接マッチしている場合は表示名だけエイリアスに上書き
+      const existing = directMatches.find(a => a.town_name === real);
+      if (existing && !existing.displayName) existing.displayName = `${alias}（${real}）`;
+      continue;
+    }
+    seenTowns.add(real);
+    aliasMatches.push({ ...area, displayName: `${alias}（${real}）` });
+  }
+
+  // 3) 正式町名のエイリアス逆引き部分一致
+  //    例: 「きよすみ」→ alias「清澄白河」→ 正式「清澄」
+  for (const [alias, real] of Object.entries(ALIAS_MAP)) {
+    if (!real.includes(q)) continue;
+    const area = allAreas.find(a => a.town_name === real);
+    if (!area || seenTowns.has(real)) continue;
+    seenTowns.add(real);
+    aliasMatches.push({ ...area, displayName: `${alias}（${real}）` });
+  }
+
+  const allMatches = [...directMatches, ...aliasMatches].slice(0, 8);
+
+  if (!allMatches.length) {
+    box.innerHTML = `<div class="suggestion-item" style="color:var(--text-dim);pointer-events:none">「${q}」に一致する町名が見つかりません</div>`;
+    return;
+  }
+
+  box.innerHTML = allMatches.map(a => {
+    const label = a.displayName || a.town_name;
+    const ward = a.ward || '';
+    return `<div class="suggestion-item" onclick="quickSelect('${a.town_name}')">📍 ${label} <span style="color:#6b7a99;font-size:11px">${ward} ${a.income_label || ''}</span></div>`;
+  }).join('');
 }
 
 function quickSelect(name) {
@@ -714,10 +736,42 @@ function renderProfileTab(area) {
         <div class="rent-note">※ 住宅・土地統計調査から推計</div>
        </div>`
     : '';
+  // 手取り月収の概算（給与所得控除・社会保険・所得税・住民税を考慮した簡易計算）
+  const annualIncome = area.estimated_income || 0;
+  let monthlyTakeHome = 0;
+  if (annualIncome > 0) {
+    // 給与所得控除後の所得（簡易）
+    let deduction = 0;
+    if (annualIncome <= 162.5) deduction = 55;
+    else if (annualIncome <= 180) deduction = annualIncome * 0.4 - 10;
+    else if (annualIncome <= 360) deduction = annualIncome * 0.3 + 8;
+    else if (annualIncome <= 660) deduction = annualIncome * 0.2 + 44;
+    else if (annualIncome <= 850) deduction = annualIncome * 0.1 + 110;
+    else deduction = 195;
+    const taxableIncome = Math.max(0, annualIncome - deduction - 48); // 基礎控除48万
+    // 社会保険料（年収の約15%）
+    const socialInsurance = Math.round(annualIncome * 0.15);
+    // 所得税（簡易累進）
+    let incomeTax = 0;
+    if (taxableIncome <= 195) incomeTax = taxableIncome * 0.05;
+    else if (taxableIncome <= 330) incomeTax = 9.75 + (taxableIncome - 195) * 0.1;
+    else if (taxableIncome <= 695) incomeTax = 23.25 + (taxableIncome - 330) * 0.2;
+    else if (taxableIncome <= 900) incomeTax = 96.25 + (taxableIncome - 695) * 0.23;
+    else incomeTax = 143.4 + (taxableIncome - 900) * 0.33;
+    // 住民税（約10%）
+    const residentTax = taxableIncome * 0.1;
+    const netAnnual = annualIncome - socialInsurance - Math.round(incomeTax) - Math.round(residentTax);
+    monthlyTakeHome = Math.round(netAnnual / 12);
+  }
+  const monthlyHtml = monthlyTakeHome > 0
+    ? `<div class="monthly-income">手取り月収 <strong>${monthlyTakeHome.toLocaleString()}万円</strong><span class="monthly-note">概算</span></div>`
+    : '';
+
   document.getElementById('income-display').innerHTML = `
     <div class="income-amount">${(area.estimated_income || 0).toLocaleString()}<span>万円</span></div>
     <div class="income-sub">
       <div class="income-unit">推定世帯年収（年間）</div>
+      ${monthlyHtml}
       <div class="income-note">※ 国勢調査データから統計的に推計</div>
     </div>
     ${rentHtml}
@@ -1001,7 +1055,9 @@ function showMultiAreaResult(areas) {
     monthly_goods: avg('monthly_goods'),
     monthly_edu: avg('monthly_edu'),
     monthly_leisure: avg('monthly_leisure'),
-    age_dist: mergeAgeDist(areas)
+    age_dist: mergeAgeDist(areas),
+    rent_min: avg('rent_min'),
+    rent_max: avg('rent_max')
   };
 
   currentAreaData = merged;
