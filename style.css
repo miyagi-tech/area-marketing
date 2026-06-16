@@ -1185,4 +1185,14 @@ h1 {
   .tab-btn { font-size: 12px; height: 44px; }
   .spending-amount { font-size: 17px; }
   .income-amount { font-size: 30px; }
+
+  /* スマホpeek/open時はLeafletズームボタンをパネルの上に出ないようz-indexを下げる */
+  .leaflet-control-zoom {
+    z-index: 400 !important;
+  }
+
+  /* result-panelはz-index: 450なので必ずパネルが上に来る */
+  #result-panel {
+    z-index: 450;
+  }
 }
