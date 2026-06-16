@@ -11,7 +11,21 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app">
+  <!-- パスワード認証画面 -->
+  <div id="auth-screen">
+    <div class="auth-card">
+      <div class="auth-icon">📍</div>
+      <h2 class="auth-title">東京 エリア分析</h2>
+      <p class="auth-sub">購買層・消費傾向マップ</p>
+      <div class="auth-input-wrap">
+        <input type="password" id="auth-input" placeholder="パスワードを入力" autocomplete="current-password">
+        <button id="auth-btn">→</button>
+      </div>
+      <p id="auth-error" class="auth-error hidden">パスワードが違います</p>
+    </div>
+  </div>
+
+  <div id="app" class="hidden">
 
     <!-- ヘッダー -->
     <header id="header">
@@ -84,6 +98,8 @@
             <button class="panel-ctrl-btn" id="panel-minimize-btn" title="縮小">⬇ 縮小</button>
             <button class="panel-ctrl-btn" id="panel-expand-btn" title="展開">⬆ 展開</button>
           </div>
+          <!-- スマホpeek時に見えるエリア名（スマホのみ表示） -->
+          <span id="panel-topbar-name"></span>
           <button class="panel-ctrl-btn" id="panel-new-search-btn">🔍 再検索</button>
         </div>
 

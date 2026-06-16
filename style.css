@@ -48,6 +48,91 @@ html, body {
   overflow: hidden;
 }
 
+/* ===== パスワード認証画面 ===== */
+#auth-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 24px;
+}
+#auth-screen.hidden { display: none; }
+
+.auth-card {
+  background: var(--bg2);
+  border: 1.5px solid var(--border2);
+  border-radius: 20px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.auth-icon {
+  font-size: 40px;
+  margin-bottom: 14px;
+}
+.auth-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 4px;
+  letter-spacing: 0.03em;
+}
+.auth-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.auth-input-wrap {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+#auth-input {
+  flex: 1;
+  height: 48px;
+  border: 1.5px solid var(--border2);
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 16px;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text);
+  background: var(--bg3);
+  outline: none;
+  transition: border-color 0.2s;
+  letter-spacing: 0.1em;
+}
+#auth-input:focus { border-color: var(--primary); }
+#auth-btn {
+  width: 48px;
+  height: 48px;
+  background: var(--primary);
+  border: none;
+  border-radius: 12px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #0d0f14;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+#auth-btn:hover { background: var(--primary-dark); }
+.auth-error {
+  font-size: 13px;
+  color: var(--danger);
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.auth-error.hidden { display: none; }
+
 /* ===== アプリ全体 ===== */
 #app {
   display: flex;
@@ -416,6 +501,20 @@ h1 {
 .panel-ctrl-btn:hover, .panel-ctrl-btn:active {
   border-color: var(--accent2);
   color: var(--text);
+}
+
+/* top-barエリア名（PCでは非表示、スマホのみ表示） */
+#panel-topbar-name {
+  display: none;
+  font-family: 'Outfit', 'Noto Sans JP', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
 }
 
 /* 再検索ボタン */
@@ -1035,9 +1134,9 @@ h1 {
     transform: translateY(0);
   }
 
-  /* 帯状態（縮小）: 上部90pxだけ見える */
+  /* 帯状態（縮小）: 上部130pxだけ見える（再検索ボタンが確実に表示されるよう高さを確保） */
   #result-panel.peek {
-    transform: translateY(calc(100% - 90px));
+    transform: translateY(calc(100% - 130px));
   }
 
   .panel-handle {
@@ -1065,6 +1164,21 @@ h1 {
   #panel-minimize-btn,
   #panel-expand-btn {
     display: none;
+  }
+
+  /* スマホのpanel-top-barはエリア名＋再検索ボタンを並べて表示 */
+  #panel-top-bar {
+    justify-content: space-between;
+    padding: 8px 14px;
+  }
+  #panel-topbar-name {
+    display: block;
+  }
+  #panel-new-search-btn {
+    flex-shrink: 0;
+    height: 44px;
+    font-size: 15px;
+    padding: 0 18px;
   }
 
   #area-name { font-size: 22px; }
