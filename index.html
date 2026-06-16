@@ -43,13 +43,13 @@
       <div id="map-container">
         <div id="map"></div>
 
-        <!-- モード切替ボタン（地図上） -->
+        <!-- モード切替ボタン（地図上・左上） -->
         <div id="mode-buttons">
           <button class="mode-btn active" id="btn-point" onclick="setMode('point')">
-            📍 1点選択
+            📍 ピンポイント
           </button>
           <button class="mode-btn" id="btn-area" onclick="setMode('area')">
-            ⬜ 範囲選択
+            ✏️ 範囲検索
           </button>
         </div>
 
@@ -58,17 +58,30 @@
           <span id="hint-text">📍 地図をクリックまたは町名を検索してください</span>
         </div>
 
-        <!-- 範囲選択オーバーレイ -->
-        <div id="selection-overlay"></div>
+        <!-- フリーハンド選択用SVGオーバーレイ -->
+        <svg id="freehand-svg" xmlns="http://www.w3.org/2000/svg">
+          <path id="freehand-path" fill="rgba(0,194,203,0.10)" stroke="#00c2cb" stroke-width="2" stroke-dasharray="6,4" stroke-linejoin="round" stroke-linecap="round" d=""/>
+        </svg>
       </div>
 
       <!-- 結果パネル（右サイドバー / スマホ下部） -->
       <div id="result-panel">
-        <div class="panel-handle"></div>
+        <!-- スマホ用ドラッグハンドル -->
+        <div class="panel-handle" id="panel-handle"></div>
 
-        <!-- パネル閉じるボタン -->
+        <!-- パネルコントロールバー -->
         <div id="panel-top-bar">
-          <button id="panel-close-btn" title="閉じる">✕</button>
+          <div class="panel-ctrl-btns">
+            <button class="panel-ctrl-btn" id="panel-minimize-btn" title="縮小">⬇ 縮小</button>
+            <button class="panel-ctrl-btn" id="panel-expand-btn" title="展開">⬆ 展開</button>
+          </div>
+          <button class="panel-ctrl-btn" id="panel-new-search-btn" title="新しい検索">🔍 再検索</button>
+        </div>
+
+        <!-- 検索履歴（直近5件） -->
+        <div id="search-history" class="hidden">
+          <div class="history-label">最近の検索</div>
+          <div class="history-list" id="history-list"></div>
         </div>
 
         <!-- 空状態 -->
