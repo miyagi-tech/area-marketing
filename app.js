@@ -92,10 +92,55 @@ const ALIAS_MAP = {
   '中町':     '中町',
   '上用賀':   '上用賀',
   '桜':       '桜',
-  '新町':     '新町'
+  '新町':     '新町',
+  // 江東区エイリアス
+  '門前仲町': '富岡',
+  '門仲':     '富岡',
+  '清澄白河': '清澄',
+  '白河':     '白河',
+  '豊洲':     '豊洲',
+  '亀戸':     '亀戸',
+  '砂町':     '北砂',
+  '北砂':     '北砂',
+  '南砂':     '南砂',
+  '東砂':     '東砂',
+  '木場':     '木場',
+  '東陽':     '東陽',
+  '東陽町':   '東陽',
+  '塩浜':     '塩浜',
+  '越中島':   '越中島',
+  '森下':     '森下',
+  '住吉':     '住吉',
+  '猿江':     '猿江',
+  '大島':     '大島',
+  '新大橋':   '新大橋',
+  '毛利':     '毛利',
+  '牡丹':     '牡丹',
+  '永代':     '永代',
+  '深川':     '深川',
+  '扇橋':     '扇橋',
+  '千石':     '千石',
+  '古石場':   '古石場',
+  '平野':     '平野',
+  '三好':     '三好',
+  '海辺':     '海辺',
+  '冬木':     '冬木',
+  '佐賀':     '佐賀',
+  '福住':     '福住',
+  '東雲':     '東雲',
+  '辰巳':     '辰巳',
+  '新木場':   '新木場'
 };
 
-// ===== 世田谷区 近隣商業施設データ =====
+// ===== 区の中心座標・ズームレベル =====
+const WARD_CONFIG = {
+  '世田谷区': { center: [35.6464, 139.6533], zoom: 13 },
+  '江東区':   { center: [35.6700, 139.8170], zoom: 13 }
+};
+
+let currentWard = '世田谷区';
+
+// ===== 近隣商業施設データ（世田谷区・江東区） =====
 const FACILITIES_DB = [
   // ショッピングモール・SC
   { name: '二子玉川ライズ S.C.', type: 'ショッピングセンター', grade: 'premium', icon: '🏬', lat: 35.6097, lng: 139.6270, anchor: '玉川' },
@@ -119,9 +164,23 @@ const FACILITIES_DB = [
   { name: 'ニトリ 経堂店', type: 'インテリア専門店', grade: 'standard', icon: '🛋️', lat: 35.6450, lng: 139.6480, anchor: '経堂' },
   { name: 'TSUTAYA 下北沢店', type: 'エンタメ複合店', grade: 'standard', icon: '🎵', lat: 35.6580, lng: 139.6620, anchor: '北沢' },
   { name: 'ビックカメラ 二子玉川店', type: '家電量販店', grade: 'standard', icon: '📱', lat: 35.6097, lng: 139.6270, anchor: '玉川' },
+  // 江東区 商業施設
+  { name: 'アーバンドック ららぽーと豊洲', type: 'ショッピングモール', grade: 'premium', icon: '🏬', lat: 35.6548, lng: 139.7954, anchor: '豊洲' },
+  { name: 'イオン 東雲店', type: 'スーパー・SC', grade: 'daily', icon: '🛒', lat: 35.6490, lng: 139.8100, anchor: '東雲' },
+  { name: 'イトーヨーカドー 亀戸店', type: 'スーパー・SC', grade: 'daily', icon: '🛒', lat: 35.6930, lng: 139.8270, anchor: '亀戸' },
+  { name: 'アリオ亀戸', type: 'ショッピングセンター', grade: 'standard', icon: '🏬', lat: 35.6940, lng: 139.8250, anchor: '亀戸' },
+  { name: 'サンストリート亀戸', type: '複合商業施設', grade: 'standard', icon: '🏪', lat: 35.6920, lng: 139.8260, anchor: '亀戸' },
+  { name: 'ゆめみどり（砂町銀座）', type: '商店街', grade: 'daily', icon: '🏘️', lat: 35.6830, lng: 139.8370, anchor: '北砂' },
+  { name: 'イオン 南砂店', type: 'スーパー・SC', grade: 'daily', icon: '🛒', lat: 35.6720, lng: 139.8350, anchor: '南砂' },
+  { name: 'ビバホーム 江東南砂店', type: 'ホームセンター', grade: 'daily', icon: '🔨', lat: 35.6700, lng: 139.8380, anchor: '南砂' },
+  { name: '深川ギャザリア', type: 'ショッピングセンター', grade: 'standard', icon: '🏬', lat: 35.6620, lng: 139.8030, anchor: '木場' },
+  { name: 'ゼロゲート清澄白河', type: '複合商業施設', grade: 'standard', icon: '🏪', lat: 35.6800, lng: 139.7960, anchor: '清澄' },
+  { name: '東京スカイツリータウン（近隣）', type: '複合商業施設', grade: 'premium', icon: '🗼', lat: 35.7101, lng: 139.8107, anchor: '亀戸' },
+  { name: '銀座（近隣）', type: '百貨店・高級商業街', grade: 'premium', icon: '🏛️', lat: 35.6717, lng: 139.7650, anchor: '越中島' },
+  { name: 'コストコ 新木場倉庫店', type: '会員制倉庫型SC', grade: 'standard', icon: '🏭', lat: 35.6460, lng: 139.8280, anchor: '新木場' },
 ];
 
-// ===== 世田谷区 町代表座標 =====
+// ===== 町代表座標（世田谷区・江東区） =====
 const TOWN_COORDS = {
   '池尻':       [35.6520, 139.6810],
   '三宿':       [35.6490, 139.6780],
@@ -181,7 +240,41 @@ const TOWN_COORDS = {
   '奥沢':       [35.6030, 139.6620],
   '玉堤':       [35.5990, 139.6450],
   '若林':       [35.6480, 139.6640],
-  '桜丘':       [35.6350, 139.6560]
+  '桜丘':       [35.6350, 139.6560],
+  // 江東区
+  '豊洲':       [35.6548, 139.7954],
+  '富岡':       [35.6720, 139.7940],
+  '清澄':       [35.6800, 139.7960],
+  '白河':       [35.6820, 139.7980],
+  '亀戸':       [35.6930, 139.8270],
+  '北砂':       [35.6830, 139.8370],
+  '南砂':       [35.6720, 139.8350],
+  '東砂':       [35.6750, 139.8450],
+  '木場':       [35.6620, 139.8030],
+  '東陽':       [35.6680, 139.8120],
+  '塩浜':       [35.6590, 139.8070],
+  '越中島':     [35.6650, 139.7870],
+  '森下':       [35.6870, 139.7980],
+  '住吉':       [35.6900, 139.8060],
+  '猿江':       [35.6920, 139.8100],
+  '大島':       [35.6990, 139.8200],
+  '新大橋':     [35.6840, 139.7930],
+  '毛利':       [35.6760, 139.8010],
+  '牡丹':       [35.6740, 139.7960],
+  '永代':       [35.6700, 139.7900],
+  '深川':       [35.6750, 139.7930],
+  '扇橋':       [35.6940, 139.8140],
+  '千石':       [35.6960, 139.8180],
+  '古石場':     [35.6680, 139.7980],
+  '平野':       [35.6860, 139.8010],
+  '三好':       [35.6810, 139.7970],
+  '海辺':       [35.6780, 139.7940],
+  '冬木':       [35.6730, 139.7950],
+  '佐賀':       [35.6710, 139.7920],
+  '福住':       [35.6660, 139.8000],
+  '東雲':       [35.6490, 139.8100],
+  '辰巳':       [35.6430, 139.8180],
+  '新木場':     [35.6460, 139.8280]
 };
 
 // ===== 状態管理 =====
@@ -195,6 +288,22 @@ let panelState = 'closed';
 let isFreehandDrawing = false;
 let freehandPoints = [];
 let currentAreaData = null; // 現在表示中のエリアデータ
+
+// ===== 区切替 =====
+function selectWard(ward) {
+  currentWard = ward;
+  // ボタンのactive切替
+  document.querySelectorAll('.ward-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.ward === ward);
+  });
+  // 地図をシュッと移動
+  const cfg = WARD_CONFIG[ward];
+  if (cfg) map.flyTo(cfg.center, cfg.zoom, { duration: 0.8 });
+  // 検索欄クリア・リセット
+  resetToHome();
+  document.getElementById('search-input').placeholder =
+    ward === '江東区' ? '町名を検索（例：豊洲、清澄白河...）' : '町名を検索（例：三軒茶屋、下北沢...）';
+}
 
 // ===== 初期化 =====
 document.addEventListener('DOMContentLoaded', async () => {
@@ -230,17 +339,27 @@ function initUI() {
     if (e.key === 'Enter') doSearch();
   });
   document.getElementById('search-input').addEventListener('input', onSearchInput);
+  // 検索バー外クリックで候補・履歴を閉じる
   document.addEventListener('click', e => {
-    if (!e.target.closest('#search-bar')) {
+    if (!e.target.closest('#search-bar') && !e.target.closest('#history-drawer')) {
       document.getElementById('search-suggestions').innerHTML = '';
       document.getElementById('history-drawer').classList.add('hidden');
     }
   });
 
-  // 履歴ボタン
-  document.getElementById('history-btn').addEventListener('click', e => {
+  // 履歴ボタン: mousedownで開閉（clickより先に発火してdocument.clickと競合しない）
+  document.getElementById('history-btn').addEventListener('mousedown', e => {
+    e.preventDefault();
     e.stopPropagation();
-    document.getElementById('history-drawer').classList.toggle('hidden');
+    const drawer = document.getElementById('history-drawer');
+    drawer.classList.toggle('hidden');
+  });
+  // タッチデバイス用
+  document.getElementById('history-btn').addEventListener('touchend', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    const drawer = document.getElementById('history-drawer');
+    drawer.classList.toggle('hidden');
   });
 
   // タブ切替（イベント委譲）
@@ -254,12 +373,17 @@ function initUI() {
   let tabTouchStartX = 0;
   const tabWrapper = document.getElementById('tab-wrapper');
   if (tabWrapper) {
+    let tabTouchStartY = 0;
     tabWrapper.addEventListener('touchstart', e => {
       tabTouchStartX = e.touches[0].clientX;
+      tabTouchStartY = e.touches[0].clientY;
     }, { passive: true });
     tabWrapper.addEventListener('touchend', e => {
       const dx = e.changedTouches[0].clientX - tabTouchStartX;
+      const dy = e.changedTouches[0].clientY - tabTouchStartY;
+      // 横移動が縦移動の1.5倍以上かつ50px以上の時だけタブ切替
       if (Math.abs(dx) < 50) return;
+      if (Math.abs(dy) > Math.abs(dx) * 0.7) return; // 縦スクロール中は無視
       const activeBtn = document.querySelector('.tab-btn.active');
       if (!activeBtn) return;
       const idx = tabOrder.indexOf(activeBtn.dataset.tab);
@@ -267,6 +391,11 @@ function initUI() {
       else if (dx > 50 && idx > 0) switchTab(tabOrder[idx - 1]);
     }, { passive: true });
   }
+
+  // 区切替ボタン
+  document.querySelectorAll('.ward-btn').forEach(btn => {
+    btn.addEventListener('click', () => selectWard(btn.dataset.ward));
+  });
 
   // パネルコントロールボタン
   document.getElementById('panel-minimize-btn').addEventListener('click', () => setPanelState('peek'));
@@ -289,10 +418,20 @@ function initUI() {
     const dx = Math.abs(e.changedTouches[0].clientX - panelTouchStartX);
     if (dx > 50) return; // 横スワイプはタブ切替に使う
     if (dy > 60) {
+      // 下スワイプ: open→peek（地図に戻る、結果は保持）
       if (panelState === 'open') setPanelState('peek');
+      // peek状態からさらに下スワイプ: 完全リセット
       else if (panelState === 'peek') resetToHome();
     } else if (dy < -60) {
-      if (panelState === 'peek' || panelState === 'closed') setPanelState('open');
+      // 上スワイプ: peek→open（結果に戻る）
+      if (panelState === 'peek') setPanelState('open');
+      // closed状態から上スワイプ: データがあれば結果を再表示
+      else if (panelState === 'closed' && currentAreaData) {
+        document.getElementById('panel-empty').classList.add('hidden');
+        document.getElementById('area-header').classList.remove('hidden');
+        document.getElementById('tabs').classList.remove('hidden');
+        setPanelState('open');
+      }
     }
   }, { passive: true });
 
@@ -461,8 +600,9 @@ async function doSearch() {
 
   showLoading(true);
   try {
+    const wardName = area.ward || currentWard;
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(area.town_name + ' 世田谷区 東京')}&format=json&limit=1&accept-language=ja`
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(area.town_name + ' ' + wardName + ' 東京')}&format=json&limit=1&accept-language=ja`
     );
     const results = await res.json();
     if (results.length > 0) {
@@ -565,12 +705,22 @@ function renderAreaHeader(area) {
 
 // ===== 購買層タブ =====
 function renderProfileTab(area) {
+  const rentMin = area.rent_min || 0;
+  const rentMax = area.rent_max || 0;
+  const rentHtml = (rentMin > 0)
+    ? `<div class="rent-display">
+        <div class="rent-label">推定家賃（2LDK・民営借家）</div>
+        <div class="rent-range">${Math.round(rentMin/10000)}〜${Math.round(rentMax/10000)}万円<span class="rent-unit">/月</span></div>
+        <div class="rent-note">※ 住宅・土地統計調査から推計</div>
+       </div>`
+    : '';
   document.getElementById('income-display').innerHTML = `
     <div class="income-amount">${(area.estimated_income || 0).toLocaleString()}<span>万円</span></div>
     <div class="income-sub">
       <div class="income-unit">推定世帯年収（年間）</div>
       <div class="income-note">※ 国勢調査データから統計的に推計</div>
     </div>
+    ${rentHtml}
   `;
 
   const ageGroups = area.dominant_age_groups || [];
@@ -964,7 +1114,7 @@ function finishFreehand() {
     if (!coord) return false;
     const pt = L.latLng(coord[0], coord[1]);
     return bounds.contains(pt) && isPointInPolygon(pt, latLngs);
-  });
+  }).filter(area => !area.ward || area.ward === currentWard || true); // 全区対象
 
   clearFreehand();
   showMultiAreaResult(matched);

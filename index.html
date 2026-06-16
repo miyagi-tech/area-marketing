@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="エリア分析">
-  <title>世田谷区 エリア購買層分析</title>
+  <title>東京エリア分析</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css">
 </head>
@@ -19,7 +19,7 @@
         <div class="header-title">
           <span class="header-icon">📍</span>
           <div>
-            <h1>世田谷区 エリア分析</h1>
+            <h1>東京 エリア分析</h1>
             <p class="header-sub">購買層・消費傾向マップ</p>
           </div>
         </div>
@@ -50,6 +50,12 @@
       <!-- 地図 -->
       <div id="map-container">
         <div id="map"></div>
+
+        <!-- 区選択ボタン -->
+        <div id="ward-buttons">
+          <button class="ward-btn active" data-ward="世田谷区">📍 世田谷区</button>
+          <button class="ward-btn" data-ward="江東区">📍 江東区</button>
+        </div>
 
         <!-- モード切替ボタン -->
         <div id="mode-buttons">
