@@ -273,7 +273,8 @@ h1 {
   left: 14px;
   z-index: 500;
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  align-items: center;
 }
 
 .ward-btn {
@@ -281,9 +282,9 @@ h1 {
   border: 1.5px solid var(--border2);
   color: var(--text-muted);
   font-family: 'Outfit', 'Noto Sans JP', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 8px 16px;
+  padding: 7px 12px;
   border-radius: 10px;
   cursor: pointer;
   backdrop-filter: blur(12px);
@@ -302,14 +303,19 @@ h1 {
   font-weight: 700;
 }
 
+/* 区・モード区切り線 */
+.map-btn-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border2);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
 /* ===== モードボタン ===== */
 #mode-buttons {
-  position: absolute;
-  top: 58px;
-  left: 14px;
-  z-index: 500;
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .mode-btn {
@@ -317,9 +323,9 @@ h1 {
   border: 1.5px solid var(--border2);
   color: var(--text-muted);
   font-family: 'Outfit', 'Noto Sans JP', sans-serif;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
-  padding: 8px 16px;
+  padding: 6px 10px;
   border-radius: 10px;
   cursor: pointer;
   backdrop-filter: blur(12px);
