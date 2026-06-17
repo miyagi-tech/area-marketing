@@ -409,47 +409,14 @@ function selectWard(ward) {
 }
 
 // ===== 初期化 =====
-document.addEventListener('DOMContentLoaded', () => {
-  const AUTH_KEY = 'area_auth_ok';
-  const CORRECT_PW = 'cmc2026';
-
-  async function startApp() {
-    document.getElementById('auth-screen').classList.add('hidden');
-    document.getElementById('app').classList.remove('hidden');
-    searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
-    initMap();
-    initUI();
-    await loadAllAreas();
-    renderHistory();
-  }
-
-  // セッション内認証済みならそのまま起動
-  if (sessionStorage.getItem(AUTH_KEY) === '1') {
-    startApp();
-    return;
-  }
-
-  // 未認証: パスワード画面を表示して待機
-  async function checkAuth() {
-    const val = document.getElementById('auth-input').value;
-    if (val === CORRECT_PW) {
-      sessionStorage.setItem(AUTH_KEY, '1');
-      await startApp();
-    } else {
-      document.getElementById('auth-error').classList.remove('hidden');
-      document.getElementById('auth-input').value = '';
-      document.getElementById('auth-input').focus();
-    }
-  }
-
-  document.getElementById('auth-btn').addEventListener('click', checkAuth);
-  document.getElementById('auth-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkAuth();
-  });
-  // 入力時にエラーを消す
-  document.getElementById('auth-input').addEventListener('input', () => {
-    document.getElementById('auth-error').classList.add('hidden');
-  });
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+  initMap();
+  initUI();
+  await loadAllAreas();
+  renderHistory();
 });
 
 // ===== 地図初期化 =====
