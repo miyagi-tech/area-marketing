@@ -32,6 +32,7 @@
       <div class="search-inner">
         <input type="text" id="search-input" placeholder="町名を検索（例：三軒茶屋、下北沢...）" autocomplete="off">
         <button id="history-btn" title="検索履歴">🕐</button>
+        <button id="reverse-search-btn" title="ターゲット逆引き検索"><span>🎯 ターゲット</span></button>
         <button id="search-btn">🔍</button>
       </div>
       <div id="search-suggestions"></div>
@@ -42,6 +43,36 @@
           <div class="history-list" id="history-list"></div>
         </div>
       </div>
+      <!-- 逆引き検索パネル -->
+      <div id="reverse-panel">
+        <div class="reverse-panel-title">🎯 ターゲット逆引き検索</div>
+        <div class="reverse-row">
+          <div class="reverse-label">年収帯</div>
+          <div class="reverse-chips" id="reverse-income">
+            <button class="reverse-chip" data-value="low">〜400万円</button>
+            <button class="reverse-chip" data-value="mid">400〜600万円</button>
+            <button class="reverse-chip" data-value="high">600〜800万円</button>
+            <button class="reverse-chip" data-value="very-high">800万円〜</button>
+          </div>
+        </div>
+        <div class="reverse-row">
+          <div class="reverse-label">主要年齢層</div>
+          <div class="reverse-chips" id="reverse-age">
+            <button class="reverse-chip" data-value="young">20〜30代</button>
+            <button class="reverse-chip" data-value="middle">40〜50代</button>
+            <button class="reverse-chip" data-value="senior">60代以上</button>
+          </div>
+        </div>
+        <div class="reverse-row">
+          <div class="reverse-label">世帯タイプ</div>
+          <div class="reverse-chips" id="reverse-family">
+            <button class="reverse-chip" data-value="single">単身・DINKS</button>
+            <button class="reverse-chip" data-value="family">ファミリー</button>
+            <button class="reverse-chip" data-value="elderly">高齢世帯</button>
+          </div>
+        </div>
+        <button id="reverse-search-execute">このターゲットが多いエリアを探す</button>
+      </div>
     </div>
 
     <!-- メインコンテンツ -->
@@ -51,7 +82,7 @@
       <div id="map-container">
         <div id="map"></div>
 
-        <!-- 区選択 + モードボタン（1行にまとめ） -->
+        <!-- 区選択 + モードボタン -->
         <div id="ward-buttons">
           <button class="ward-btn active" data-ward="世田谷区">世田谷区</button>
           <button class="ward-btn" data-ward="江東区">江東区</button>
@@ -72,7 +103,7 @@
 
         <!-- フリーハンド選択用SVGオーバーレイ -->
         <svg id="freehand-svg" xmlns="http://www.w3.org/2000/svg">
-          <path id="freehand-path" fill="rgba(0,212,222,0.10)" stroke="#00d4de" stroke-width="2" stroke-dasharray="6,4" stroke-linejoin="round" stroke-linecap="round" d=""/>
+          <path id="freehand-path" fill="rgba(0,184,196,0.10)" stroke="#00b8c4" stroke-width="2" stroke-dasharray="6,4" stroke-linejoin="round" stroke-linecap="round" d=""/>
         </svg>
       </div>
 
@@ -87,9 +118,14 @@
             <button class="panel-ctrl-btn" id="panel-minimize-btn" title="縮小">⬇ 縮小</button>
             <button class="panel-ctrl-btn" id="panel-expand-btn" title="展開">⬆ 展開</button>
           </div>
-          <!-- スマホpeek時に見えるエリア名（スマホのみ表示） -->
           <span id="panel-topbar-name"></span>
           <button class="panel-ctrl-btn" id="panel-new-search-btn">🔍 再検索</button>
+        </div>
+
+        <!-- 売り手/買い手 モード切替 -->
+        <div id="mode-toggle-bar" class="hidden">
+          <button class="mode-toggle-btn active-seller" id="btn-seller-mode">🏪 売り手視点</button>
+          <button class="mode-toggle-btn" id="btn-buyer-mode">👤 買い手視点</button>
         </div>
 
         <!-- 空状態 -->
@@ -102,7 +138,6 @@
         <div id="area-header" class="hidden">
           <div class="area-title-row">
             <h2 id="area-name"></h2>
-            <!-- PC用年収バッジ（スマホでは非表示） -->
             <div id="income-badge" class="income-badge"></div>
           </div>
           <div id="area-tags"></div>
@@ -110,7 +145,6 @@
             <span id="area-pop"></span>
             <span id="area-age"></span>
           </div>
-          <!-- スマホ用年収バッジ（スマホのみ表示、area-metaの下） -->
           <div id="income-badge-mobile" class="income-badge"></div>
         </div>
 
@@ -131,6 +165,11 @@
           <!-- 購買層タブ -->
           <div id="tab-profile" class="tab-content hidden">
             <div class="tab-inner">
+              <!-- 来店確率スコア（売り手モード） -->
+              <div id="visit-score-section"></div>
+              <!-- 買い手ペルソナ（買い手モード） -->
+              <div id="buyer-persona-section" class="hidden"></div>
+
               <div class="section-title">推定世帯年収</div>
               <div id="income-display" class="income-card"></div>
 

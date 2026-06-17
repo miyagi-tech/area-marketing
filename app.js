@@ -539,6 +539,43 @@ function initUI() {
     }
   }, { passive: true });
 
+  // 逆引き検索ボタン開閉
+  const reverseBtn = document.getElementById('reverse-search-btn');
+  const reversePanel = document.getElementById('reverse-panel');
+  reverseBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = reversePanel.classList.contains('open');
+    reversePanel.classList.toggle('open', !isOpen);
+    reverseBtn.classList.toggle('active', !isOpen);
+    document.getElementById('history-drawer').classList.add('hidden');
+    document.getElementById('search-suggestions').innerHTML = '';
+  });
+  // 逆引きチップ選択（単一選択）
+  document.querySelectorAll('.reverse-chips').forEach(group => {
+    group.addEventListener('click', e => {
+      const chip = e.target.closest('.reverse-chip');
+      if (!chip) return;
+      group.querySelectorAll('.reverse-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+    });
+  });
+  // 逆引き検索実行
+  document.getElementById('reverse-search-execute').addEventListener('click', () => {
+    executeReverseSearch();
+    reversePanel.classList.remove('open');
+    reverseBtn.classList.remove('active');
+  });
+  // 売り手/買い手モード切替
+  document.getElementById('btn-seller-mode').addEventListener('click', () => setViewMode('seller'));
+  document.getElementById('btn-buyer-mode').addEventListener('click', () => setViewMode('buyer'));
+  // 外クリックで逆引きパネルを閉じる
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#reverse-panel') && !e.target.closest('#reverse-search-btn')) {
+      reversePanel.classList.remove('open');
+      reverseBtn.classList.remove('active');
+    }
+  });
+
   // フリーハンド描画イベント
   const mapEl = document.getElementById('map');
   mapEl.addEventListener('mousedown', onFreehandStart);
@@ -572,6 +609,7 @@ function resetToHome() {
   document.getElementById('panel-empty').classList.remove('hidden');
   document.getElementById('area-header').classList.add('hidden');
   document.getElementById('multi-area-info').classList.add('hidden');
+  document.getElementById('mode-toggle-bar').classList.add('hidden');
   document.getElementById('tabs').classList.add('hidden');
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
   document.getElementById('map-hint').classList.remove('hidden');
@@ -809,12 +847,15 @@ function showAreaResult(area) {
   addHistory(area.town_name);
   renderAreaHeader(area);
   document.getElementById('multi-area-info').classList.add('hidden');
+  // 売り手モードで再描画
+  setViewMode('seller');
   renderProfileTab(area);
   renderSpendingTab(area);
   renderAgeTab(area);
   renderChannelTab(area);
   document.getElementById('panel-empty').classList.add('hidden');
   document.getElementById('area-header').classList.remove('hidden');
+  document.getElementById('mode-toggle-bar').classList.remove('hidden');
   document.getElementById('tabs').classList.remove('hidden');
   switchTab('profile');
   setPanelState('open');
@@ -851,8 +892,240 @@ function renderAreaHeader(area) {
   document.getElementById('area-age').textContent = `平均年齢 ${area.avg_age}歳`;
 }
 
+// ===== 現在の表示モード =====
+let currentViewMode = 'seller';
+
+function setViewMode(mode) {
+  currentViewMode = mode;
+  const sellerBtn = document.getElementById('btn-seller-mode');
+  const buyerBtn = document.getElementById('btn-buyer-mode');
+  if (!sellerBtn || !buyerBtn) return;
+  sellerBtn.classList.toggle('active-seller', mode === 'seller');
+  sellerBtn.classList.toggle('mode-toggle-btn', true);
+  buyerBtn.classList.toggle('active-buyer', mode === 'buyer');
+  buyerBtn.classList.toggle('mode-toggle-btn', true);
+  // スコアセクションの切替
+  const scoreSection = document.getElementById('visit-score-section');
+  const personaSection = document.getElementById('buyer-persona-section');
+  if (scoreSection) scoreSection.classList.toggle('hidden', mode !== 'seller');
+  if (personaSection) personaSection.classList.toggle('hidden', mode !== 'buyer');
+  // 買い手モードの場合、ペルソナを再描画
+  if (mode === 'buyer' && currentAreaData) renderBuyerPersona(currentAreaData);
+}
+
+// ===== 来店確率スコア計算 =====
+function calcVisitScore(area) {
+  const income = area.estimated_income || 0;
+  const avgAge = parseFloat(area.avg_age) || 40;
+  const elderly = area.elderly_ratio || 0;
+  const working = area.working_ratio || 0;
+  const child = area.child_ratio || 0;
+  const pop = area.pop_total || 0;
+  const families = area.family_types || [];
+  const singleRatio = families.find(f => f.type && f.type.includes('単身'))?.ratio || 0;
+  const familyRatio = families.find(f => f.type && f.type.includes('小子'))?.ratio ||
+                      families.find(f => f.type && f.type.includes('山手'))?.ratio || 0;
+
+  // 年収スコア（中高年収帯が最高）
+  const incomeScore = income >= 800 ? 90 : income >= 600 ? 80 : income >= 400 ? 65 : 50;
+  // 年齢スコア（30〜55歳が最高）
+  const ageScore = avgAge >= 30 && avgAge <= 55 ? 85 : avgAge < 30 ? 70 : 60;
+  // 人口規模スコア
+  const popScore = pop >= 20000 ? 90 : pop >= 10000 ? 75 : pop >= 5000 ? 60 : 45;
+  // 生産年齢層スコア
+  const workingScore = working >= 65 ? 85 : working >= 55 ? 70 : 55;
+
+  const total = Math.round(incomeScore * 0.35 + ageScore * 0.25 + popScore * 0.20 + workingScore * 0.20);
+
+  // タグ生成
+  const tags = [];
+  if (income >= 600) tags.push({ label: '高年収帯', type: 'pos' });
+  if (avgAge >= 30 && avgAge <= 50) tags.push({ label: '購買活発年齢', type: 'pos' });
+  if (working >= 65) tags.push({ label: '就業世帯多', type: 'pos' });
+  if (singleRatio > 40) tags.push({ label: '単身多め', type: 'neu' });
+  if (familyRatio > 40) tags.push({ label: 'ファミリー層', type: 'pos' });
+  if (elderly > 30) tags.push({ label: '高齢化進行', type: 'neg' });
+  if (pop < 5000) tags.push({ label: '小規模エリア', type: 'neg' });
+
+  return { score: Math.min(95, Math.max(30, total)), tags };
+}
+
+// ===== 買い手ペルソナ描画 =====
+function renderBuyerPersona(area) {
+  const income = area.estimated_income || 0;
+  const avgAge = parseFloat(area.avg_age) || 40;
+  const elderly = area.elderly_ratio || 0;
+  const child = area.child_ratio || 0;
+  const families = area.family_types || [];
+  const singleRatio = families.find(f => f.type && f.type.includes('単身'))?.ratio || 0;
+
+  // ペルソナ判定
+  let avatar = '👤', personaName, personaSub, lifestyle, needs, painPoints;
+
+  if (income >= 700 && avgAge >= 35 && avgAge <= 55) {
+    avatar = '👨‍👩‍👧'; personaName = '高所得ファミリー層';
+    personaSub = `平均${Math.round(avgAge)}歳・帖帯年収${income}万円帯`;
+    lifestyle = '品質重視の消費行動。周末は家族での外食・SC利用が多い。教育費に積極的。';
+    needs = ['高品質食材', '子ども向け教室', 'プレミアム体験', '安心・安全'];
+    painPoints = '時間不足。価格より「信頼できるか」を重視。子どもの将来への投賄意欲高い。';
+  } else if (income >= 600 && singleRatio > 35 && avgAge < 45) {
+    avatar = '👨‍💻'; personaName = 'アクティブ単身・ DINKS層';
+    personaSub = `平均${Math.round(avgAge)}歳・帖帯年収${income}万円帯`;
+    lifestyle = 'トレンドに敏感。外食・EC利用率高。自分への投賄（健康・趣味）に積極的。スマホでの購買履歴が多い。';
+    needs = ['体験型サービス', 'EC・デリバリー', 'ヘルスケア', 'サブスク'];
+    painPoints = '忙しく時間がない。「気分が上がる」体験や「手間なし」の便利さを求める。';
+  } else if (elderly > 28 || avgAge > 55) {
+    avatar = '👴'; personaName = 'シニア層';
+    personaSub = `平均${Math.round(avgAge)}歳・高齢者比率${elderly}%`;
+    lifestyle = '健康意識高。近辺での買い物を好む。安心・信頼を重視し、繰り返し利用しやすい。';
+    needs = ['健康食品', '近辺の店舗', '安心・信頼', '介護・不具合対応'];
+    painPoints = '身体的な制限。デジタル操作への不安。子ども・孫へのプレゼント消費が多い。';
+  } else if (child > 15) {
+    avatar = '👨‍👩‍👦'; personaName = '子育てファミリー層';
+    personaSub = `平均${Math.round(avgAge)}歳・子ども比率${child}%`;
+    lifestyle = '子ども中心の消費。コスパフ意識高。安心・安全を最優先。周末は家族での外出・イベント。';
+    needs = ['子ども用品', '安心・安全', 'コスパフ商品', '家族向けイベント'];
+    painPoints = '子どもの成長と出費への不安。時間と余裕が少ない。コスパフでも「良いもの」を求める。';
+  } else {
+    avatar = '👥'; personaName = '中間層・ミックス層';
+    personaSub = `平均${Math.round(avgAge)}歳・帖帯年収${income}万円帯`;
+    lifestyle = 'バランスのとれた消費行動。日常的な買い物と時々のプチ岐贸を並立。';
+    needs = ['コスパフ商品', '日常的な便利さ', '適度なプレミアム体験'];
+    painPoints = '特定のブランドロイヤルティが低い。価格と品質のバランスを重視。';
+  }
+
+  const section = document.getElementById('buyer-persona-section');
+  if (!section) return;
+  section.innerHTML = `
+    <div class="buyer-persona-card">
+      <div class="buyer-persona-header">
+        <div class="buyer-persona-avatar">${avatar}</div>
+        <div>
+          <div class="buyer-persona-name">${personaName}</div>
+          <div class="buyer-persona-sub">${personaSub}</div>
+        </div>
+      </div>
+      <div class="buyer-persona-section">
+        <div class="buyer-persona-section-title">ライフスタイル</div>
+        <div class="buyer-persona-text">${lifestyle}</div>
+      </div>
+      <div class="buyer-persona-section">
+        <div class="buyer-persona-section-title">ニーズ・求めるもの</div>
+        <div class="buyer-need-tags">${needs.map(n => `<span class="buyer-need-tag">${n}</span>`).join('')}</div>
+      </div>
+      <div class="buyer-persona-section">
+        <div class="buyer-persona-section-title">ペインポイント</div>
+        <div class="buyer-persona-text">${painPoints}</div>
+      </div>
+    </div>
+  `;
+}
+
+// ===== 逆引き検索実行 =====
+function executeReverseSearch() {
+  const incomeChip = document.querySelector('#reverse-income .reverse-chip.selected');
+  const ageChip = document.querySelector('#reverse-age .reverse-chip.selected');
+  const familyChip = document.querySelector('#reverse-family .reverse-chip.selected');
+
+  if (!incomeChip && !ageChip && !familyChip) {
+    showError('条件を少なくとと1つ選んでください');
+    return;
+  }
+
+  const incomeVal = incomeChip?.dataset.value;
+  const ageVal = ageChip?.dataset.value;
+  const familyVal = familyChip?.dataset.value;
+
+  const matched = allAreas.filter(area => {
+    const inc = area.estimated_income || 0;
+    const avg = parseFloat(area.avg_age) || 40;
+    const elderly = area.elderly_ratio || 0;
+    const child = area.child_ratio || 0;
+    const families = area.family_types || [];
+    const singleRatio = families.find(f => f.type && f.type.includes('単身'))?.ratio || 0;
+    const familyRatio = families.find(f => f.type && (f.type.includes('小子') || f.type.includes('山手')))?.ratio || 0;
+
+    let ok = true;
+    if (incomeVal === 'low' && inc >= 400) ok = false;
+    if (incomeVal === 'mid' && (inc < 400 || inc >= 600)) ok = false;
+    if (incomeVal === 'high' && (inc < 600 || inc >= 800)) ok = false;
+    if (incomeVal === 'very-high' && inc < 800) ok = false;
+    if (ageVal === 'young' && avg >= 40) ok = false;
+    if (ageVal === 'middle' && (avg < 38 || avg >= 60)) ok = false;
+    if (ageVal === 'senior' && avg < 55) ok = false;
+    if (familyVal === 'single' && singleRatio < 30) ok = false;
+    if (familyVal === 'family' && familyRatio < 30) ok = false;
+    if (familyVal === 'elderly' && elderly < 25) ok = false;
+    return ok;
+  });
+
+  if (!matched.length) {
+    showError('条件に合うエリアが見つかりませんでした');
+    return;
+  }
+
+  // マッチしたエリアをハイライト表示
+  highlightMatchedAreas(matched);
+
+  // 最初のエリアを表示
+  showAreaResult(matched[0]);
+  document.getElementById('search-input').value = matched[0].town_name;
+
+  // 結果数をトースト表示
+  showError(`🎯 ${matched.length}エリアがマッチしました`, 'success');
+}
+
+// マッチエリアを地図上でハイライト
+function highlightMatchedAreas(areas) {
+  // 既存のハイライトマーカーをクリア
+  if (window._reverseMarkers) {
+    window._reverseMarkers.forEach(m => map.removeLayer(m));
+  }
+  window._reverseMarkers = [];
+
+  areas.forEach((area, i) => {
+    const coords = TOWN_COORDS[area.town_name];
+    if (!coords) return;
+    const marker = L.circleMarker(coords, {
+      radius: i === 0 ? 14 : 10,
+      color: '#f97316',
+      fillColor: '#f97316',
+      fillOpacity: i === 0 ? 0.9 : 0.5,
+      weight: 2
+    }).addTo(map);
+    marker.bindTooltip(`🎯 ${area.town_name} (${area.income_label || ''})`, { permanent: false });
+    window._reverseMarkers.push(marker);
+  });
+
+  // 最初のエリアにフォーカス
+  const firstCoords = TOWN_COORDS[areas[0].town_name];
+  if (firstCoords) map.flyTo(firstCoords, 14, { duration: 0.8 });
+}
+
 // ===== 購買層タブ =====
 function renderProfileTab(area) {
+  // 来店確率スコア描画
+  const { score, tags } = calcVisitScore(area);
+  const scoreColor = score >= 75 ? 'var(--accent-green)' : score >= 55 ? 'var(--primary)' : 'var(--accent-orange)';
+  const scoreLabel = score >= 75 ? '高い' : score >= 55 ? '中程度' : '低め';
+  const scoreSection = document.getElementById('visit-score-section');
+  if (scoreSection) {
+    scoreSection.innerHTML = `
+      <div class="visit-score-card">
+        <div class="visit-score-header">
+          <div class="visit-score-label">🎯 来店ポテンシャルスコア</div>
+          <div class="visit-score-value" style="color:${scoreColor}">${score}<span>/100</span></div>
+        </div>
+        <div class="visit-score-bar-bg">
+          <div class="visit-score-bar-fill" style="width:${score}%;background:${scoreColor}"></div>
+        </div>
+        <div class="visit-score-tags">
+          ${tags.map(t => `<span class="visit-score-tag ${t.type}">${t.label}</span>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+
   const rentMin = area.rent_min || 0;
   const rentMax = area.rent_max || 0;
   const rentHtml = (rentMin > 0)
@@ -1362,9 +1635,10 @@ function showLoading(show) {
 }
 
 // ===== エラートースト =====
-function showError(msg) {
+function showError(msg, type = 'error') {
   const el = document.getElementById('error-toast');
   el.textContent = msg;
+  el.style.background = type === 'success' ? '#10b981' : '';
   el.classList.remove('hidden');
-  setTimeout(() => el.classList.add('hidden'), 3000);
+  setTimeout(() => { el.classList.add('hidden'); el.style.background = ''; }, 3500);
 }
