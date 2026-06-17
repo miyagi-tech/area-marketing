@@ -488,6 +488,14 @@ function setPanelState(state) {
   if (state === 'open') panel.classList.add('open');
   else if (state === 'peek') panel.classList.add('peek');
   panelState = state;
+
+  // スマホでpeek/open時はLeafletズームボタンを非表示にしてパネルとの重なりを防ぐ
+  if (window.innerWidth <= 768) {
+    const zoomCtrl = document.querySelector('.leaflet-control-zoom');
+    if (zoomCtrl) {
+      zoomCtrl.style.display = (state === 'closed') ? '' : 'none';
+    }
+  }
 }
 
 // ===== 完全リセット（再検索ボタン・スワイプで完全に閉じた時） =====
@@ -805,21 +813,24 @@ function renderProfileTab(area) {
   }
   const monthlyHtml = monthlyTakeHome > 0
     ? `<div class="monthly-income">
-        <div class="monthly-income-label">手取り月収（概算）</div>
+        <span class="monthly-income-label">手取り月収</span>
         <div class="monthly-income-value">
           <strong>${monthlyTakeHome.toLocaleString()}</strong>
-          <span class="monthly-income-unit">万円 / 月</span>
+          <span class="monthly-income-unit">万円/月</span>
         </div>
+        <span class="monthly-note">概算</span>
       </div>`
     : '';
 
   document.getElementById('income-display').innerHTML = `
-    <div class="income-amount">${(area.estimated_income || 0).toLocaleString()}<span>万円</span></div>
-    <div class="income-sub">
-      <div class="income-unit">推定世帯年収（年間）</div>
-      ${monthlyHtml}
-      <div class="income-note">※ 国勢調査データから統計的に推計</div>
+    <div class="income-top-row">
+      <div class="income-amount">${(area.estimated_income || 0).toLocaleString()}<span>万円</span></div>
+      <div class="income-sub">
+        <div class="income-unit">推定世帯年収（年間）</div>
+        <div class="income-note">※ 国勢調査データから統計的に推計</div>
+      </div>
     </div>
+    ${monthlyHtml}
     ${rentHtml}
   `;
 
