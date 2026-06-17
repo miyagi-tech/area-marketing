@@ -804,7 +804,13 @@ function renderProfileTab(area) {
     monthlyTakeHome = Math.round(netAnnual / 12);
   }
   const monthlyHtml = monthlyTakeHome > 0
-    ? `<div class="monthly-income">手取り月収 <strong>${monthlyTakeHome.toLocaleString()}万円</strong><span class="monthly-note">概算</span></div>`
+    ? `<div class="monthly-income">
+        <div class="monthly-income-label">手取り月収（概算）</div>
+        <div class="monthly-income-value">
+          <strong>${monthlyTakeHome.toLocaleString()}</strong>
+          <span class="monthly-income-unit">万円 / 月</span>
+        </div>
+      </div>`
     : '';
 
   document.getElementById('income-display').innerHTML = `

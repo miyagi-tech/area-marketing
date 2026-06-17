@@ -713,25 +713,42 @@ h1 {
 .income-unit { font-size: 12px; color: var(--primary); font-family: 'Noto Sans JP', sans-serif; font-weight: 600; }
 .income-note { font-size: 11px; color: var(--text-dim); font-family: 'Noto Sans JP', sans-serif; }
 .monthly-income {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-family: 'Noto Sans JP', sans-serif;
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+  padding: 6px 10px;
+  background: rgba(0,255,200,0.06);
+  border-radius: 8px;
+  border-left: 3px solid var(--primary);
+}
+.monthly-income-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.monthly-income-value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
 }
 .monthly-income strong {
   color: var(--primary);
   font-family: 'Outfit', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+}
+.monthly-income-unit {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'Noto Sans JP', sans-serif;
 }
 .monthly-note {
   font-size: 10px;
   color: var(--text-dim);
-  background: var(--surface);
-  padding: 1px 6px;
-  border-radius: 8px;
   font-family: 'Noto Sans JP', sans-serif;
 }
 
@@ -1135,9 +1152,9 @@ h1 {
     transform: translateY(0);
   }
 
-  /* 帯状態（縮小）: 上部130pxだけ見える（再検索ボタンが確実に表示されるよう高さを確保） */
+  /* 帯状態（縮小）: 上部150pxだけ見える（縦並びtop-barが確実に表示されるよう高さを確保） */
   #result-panel.peek {
-    transform: translateY(calc(100% - 130px));
+    transform: translateY(calc(100% - 150px));
   }
 
   .panel-handle {
@@ -1167,19 +1184,27 @@ h1 {
     display: none;
   }
 
-  /* スマホのpanel-top-barはエリア名＋再検索ボタンを並べて表示 */
+  /* スマホのpanel-top-barは縦並び（エリア名→再検索ボタン）で確実に表示 */
   #panel-top-bar {
-    justify-content: space-between;
-    padding: 8px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 14px 8px;
+    gap: 8px;
   }
   #panel-topbar-name {
     display: block;
+    font-size: 18px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   #panel-new-search-btn {
-    flex-shrink: 0;
+    width: 100%;
     height: 44px;
     font-size: 15px;
     padding: 0 18px;
+    justify-content: center;
   }
 
   #area-name { font-size: 22px; }
