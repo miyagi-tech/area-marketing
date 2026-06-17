@@ -410,8 +410,6 @@ function selectWard(ward) {
 
 // ===== 初期化 =====
 document.addEventListener('DOMContentLoaded', async () => {
-  document.getElementById('auth-screen').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
   searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
   initMap();
   initUI();
