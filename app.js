@@ -553,6 +553,7 @@ function initUI() {
   // 逆引きチップ選択（単一選択）
   document.querySelectorAll('.reverse-chips').forEach(group => {
     group.addEventListener('click', e => {
+      e.stopPropagation();
       const chip = e.target.closest('.reverse-chip');
       if (!chip) return;
       group.querySelectorAll('.reverse-chip').forEach(c => c.classList.remove('selected'));
@@ -560,7 +561,8 @@ function initUI() {
     });
   });
   // 逆引き検索実行
-  document.getElementById('reverse-search-execute').addEventListener('click', () => {
+  document.getElementById('reverse-search-execute').addEventListener('click', e => {
+    e.stopPropagation();
     executeReverseSearch();
     reversePanel.classList.remove('open');
     reverseBtn.classList.remove('active');
@@ -1113,7 +1115,10 @@ function renderProfileTab(area) {
     scoreSection.innerHTML = `
       <div class="visit-score-card">
         <div class="visit-score-header">
-          <div class="visit-score-label">🎯 来店ポテンシャルスコア</div>
+          <div class="visit-score-label-wrap">
+            <div class="visit-score-label">🎯 来店ポテンシャルスコア</div>
+            <div class="visit-score-desc">年収・年齢・人口・就業率から推計した「買い手が居る可能性」</div>
+          </div>
           <div class="visit-score-value" style="color:${scoreColor}">${score}<span>/100</span></div>
         </div>
         <div class="visit-score-bar-bg">
@@ -1218,8 +1223,50 @@ function renderProfileTab(area) {
   `;
 }
 
+// ===== 区別昼夜間人口比率（令和2年国勢調査） =====
+const DAYTIME_RATIO = {
+  '世田谷区': 88.5,
+  '江東区': 95.2,
+  '渋谷区': 226.1,
+  '板橋区': 89.5,
+  '府中市': 104.3
+};
+
 // ===== 支出傾向タブ =====
 function renderSpendingTab(area) {
+  // 昼夜間人口差セクション
+  const ward = area.ward || currentWard;
+  const ratio = DAYTIME_RATIO[ward] || 100;
+  const ratioLabel = ratio >= 150 ? '激しい流入型' : ratio >= 110 ? '流入型' : ratio >= 90 ? '均衡型' : '流出型';
+  const ratioColor = ratio >= 150 ? 'var(--accent-orange)' : ratio >= 110 ? 'var(--primary)' : ratio >= 90 ? 'var(--accent-green)' : 'var(--text-muted)';
+  const ratioDesc = ratio >= 150
+    ? '流入人口が居住者の2倍以上。昇務・観光客が多く、昔間の買い物客が見込めるエリア。'
+    : ratio >= 110 ? '居住者より昇務・通学者が多い。晡間帯の客流が期待できるエリア。'
+    : ratio >= 90 ? '居住者と昇務者がほぼ同数。安定した地元客流が見込めるエリア。'
+    : '居住者が昇務先に出るベッドタウン型。夜間・週末の客流が主流。';
+  const dayPopEst = Math.round((area.pop_total || 0) * ratio / 100);
+
+  const daytimeHtml = `
+    <div class="daytime-card">
+      <div class="daytime-header">
+        <div class="daytime-label-wrap">
+          <div class="daytime-label">☀️ 昼夜間人口比率</div>
+          <div class="daytime-sublabel">区全体の居住者100に対する昼間人口の割合</div>
+        </div>
+        <div class="daytime-ratio" style="color:${ratioColor}">${ratio}<span>%</span></div>
+      </div>
+      <div class="daytime-bar-bg">
+        <div class="daytime-bar-fill" style="width:${Math.min(ratio, 200) / 2}%;background:${ratioColor}"></div>
+        <div class="daytime-bar-100" style="left:50%"></div>
+      </div>
+      <div class="daytime-tags">
+        <span class="daytime-type-badge" style="background:${ratioColor}20;color:${ratioColor};border:1px solid ${ratioColor}40">${ratioLabel}</span>
+        ${dayPopEst > 0 ? `<span class="daytime-pop">昼間人口推計 ≈ ${dayPopEst.toLocaleString()}人</span>` : ''}
+      </div>
+      <div class="daytime-desc">${ratioDesc}</div>
+    </div>
+  `;
+
   const items = [
     { icon: '🛒', label: '食費（自炊）', key: 'monthly_food' },
     { icon: '🍽️', label: '外食費', key: 'monthly_eating_out' },
@@ -1228,7 +1275,7 @@ function renderSpendingTab(area) {
     { icon: '📚', label: '教育費', key: 'monthly_edu' },
     { icon: '🎭', label: '娯楽・趣味', key: 'monthly_leisure' }
   ];
-  document.getElementById('spending-cards').innerHTML = items.map(item => `
+  const spendingCards = items.map(item => `
     <div class="spending-card">
       <div class="spending-icon">${item.icon}</div>
       <div class="spending-label">${item.label}</div>
@@ -1236,6 +1283,7 @@ function renderSpendingTab(area) {
       <div class="spending-unit">円/月</div>
     </div>
   `).join('');
+  document.getElementById('spending-cards').innerHTML = daytimeHtml + spendingCards;
 }
 
 // ===== 年齢分布タブ =====
@@ -1295,6 +1343,19 @@ function renderChannelTab(area) {
 
   let html = '';
 
+  // ===== SNS温度感 =====
+  const snsKeywords = calcSNSKeywords(area);
+  html += `<div class="channel-section-title">📱 SNS温度感</div>`;
+  html += `<div class="sns-card">`;
+  html += `<div class="sns-desc">年収・年齢・ライフスタイルから推定した「このエリアで話題になりやすいキーワード」</div>`;
+  html += `<div class="sns-keywords">`;
+  snsKeywords.forEach(kw => {
+    html += `<span class="sns-keyword" style="background:${kw.color}15;color:${kw.color};border:1px solid ${kw.color}30">${kw.icon} ${kw.label}<span class="sns-heat">${'♥'.repeat(kw.heat)}</span></span>`;
+  });
+  html += `</div>`;
+  html += `<div class="sns-note">※人口統計・年収データから推定。実際のSNS投稿数ではありません。</div>`;
+  html += `</div>`;
+
   // チャネルマッチ確率
   html += `<div class="channel-section-title">チャネルマッチ確率</div>`;
   html += `<div class="channel-match-summary">
@@ -1350,6 +1411,63 @@ function renderChannelTab(area) {
   html += `<div class="data-note">※ 施設データは代表的な施設を掲載。距離は直線距離。チャネルマッチ率は人口統計・年収・支出傾向から算出した推計値です。</div>`;
 
   container.innerHTML = html;
+}
+
+// ===== SNS温度感キーワード生成 =====
+function calcSNSKeywords(area) {
+  const income = area.estimated_income || 500;
+  const avgAge = parseFloat(area.avg_age) || 40;
+  const elderly = area.elderly_ratio || 20;
+  const child = area.child_ratio || 12;
+  const working = area.working_ratio || 68;
+  const families = area.family_types || [];
+  const singleRatio = families.find(f => f.type && f.type.includes('単身'))?.ratio || 0;
+
+  const keywords = [];
+
+  // 高年収帯
+  if (income >= 700) {
+    keywords.push({ icon: '✨', label: 'プレミアムグルメ', color: '#f59e0b', heat: 3 });
+    keywords.push({ icon: '🏠', label: 'インテリア・リノベ', color: '#8b5cf6', heat: 2 });
+  } else if (income >= 500) {
+    keywords.push({ icon: '🍽️', label: 'コスパグルメ', color: '#10b981', heat: 3 });
+    keywords.push({ icon: '🛍️', label: 'お得情報', color: '#f97316', heat: 3 });
+  } else {
+    keywords.push({ icon: '💰', label: '節約・プチプラ', color: '#64748b', heat: 2 });
+  }
+
+  // 年齢帯
+  if (avgAge < 35) {
+    keywords.push({ icon: '📸', label: 'インスタ映えスポット', color: '#ec4899', heat: 3 });
+    keywords.push({ icon: '🍺', label: 'ナイトライフ・バー', color: '#6366f1', heat: 2 });
+  } else if (avgAge < 50) {
+    keywords.push({ icon: '🏋️', label: 'フィットネス・健康', color: '#06b6d4', heat: 2 });
+    keywords.push({ icon: '📚', label: '学び・スキルアップ', color: '#3b82f6', heat: 2 });
+  } else {
+    keywords.push({ icon: '🌿', label: '健康・長寿', color: '#22c55e', heat: 3 });
+    keywords.push({ icon: '🚣', label: '趣味・工芸', color: '#a855f7', heat: 2 });
+  }
+
+  // 子ども帯
+  if (child > 14) {
+    keywords.push({ icon: '👶', label: '子育て・教育', color: '#f97316', heat: 3 });
+    keywords.push({ icon: '🍔', label: 'ファミリーレストラン', color: '#ef4444', heat: 2 });
+  }
+
+  // 単身帯
+  if (singleRatio > 40) {
+    keywords.push({ icon: '📦', label: 'デリバリー・ネット通販', color: '#0ea5e9', heat: 3 });
+    keywords.push({ icon: '🐱', label: 'ペット・アニマル', color: '#84cc16', heat: 2 });
+  }
+
+  // 高齢帯
+  if (elderly > 28) {
+    keywords.push({ icon: '💊', label: '健康食品・サプリ', color: '#22c55e', heat: 2 });
+    keywords.push({ icon: '🌻', label: '園芸・趣味', color: '#a3e635', heat: 2 });
+  }
+
+  // 最大heat順に並び替えて上位6件返す
+  return keywords.sort((a, b) => b.heat - a.heat).slice(0, 6);
 }
 
 // ===== 距離計算（ハバーサイン） =====

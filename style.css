@@ -718,9 +718,20 @@ h1 {
 }
 .visit-score-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 10px;
+  gap: 10px;
+}
+.visit-score-label-wrap {
+  flex: 1;
+}
+.visit-score-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 400;
+  margin-top: 2px;
+  line-height: 1.4;
 }
 .visit-score-label {
   font-size: 12px;
@@ -1350,7 +1361,7 @@ h1 {
   }
 
   #result-panel.open  { transform: translateY(0); }
-  #result-panel.peek  { transform: translateY(calc(100% - 150px)); }
+  #result-panel.peek  { transform: translateY(calc(100% - 200px)); }
 
   .panel-handle {
     display: block;
@@ -1415,4 +1426,128 @@ h1 {
   /* モード切替トグル */
   #mode-toggle-bar { padding: 8px 12px; }
   .mode-toggle-btn { font-size: 12px; height: 34px; }
+}
+
+/* ===== 昼夜間人口カード ===== */
+.daytime-card {
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.daytime-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.daytime-label-wrap { flex: 1; }
+.daytime-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+}
+.daytime-sublabel {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.daytime-ratio {
+  font-size: 26px;
+  font-weight: 900;
+  font-family: 'Outfit', sans-serif;
+  line-height: 1;
+}
+.daytime-ratio span {
+  font-size: 14px;
+  font-weight: 600;
+}
+.daytime-bar-bg {
+  position: relative;
+  height: 8px;
+  background: var(--bg3);
+  border-radius: 4px;
+  margin-bottom: 10px;
+  overflow: visible;
+}
+.daytime-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+.daytime-bar-100 {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 16px;
+  background: var(--text-dim);
+  border-radius: 1px;
+}
+.daytime-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.daytime-type-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: 'Outfit', sans-serif;
+}
+.daytime-pop {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.daytime-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ===== SNS温度感カード ===== */
+.sns-card {
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.sns-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.sns-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.sns-keyword {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Outfit', 'Noto Sans JP', sans-serif;
+  cursor: default;
+}
+.sns-heat {
+  font-size: 9px;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+.sns-note {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.4;
 }
