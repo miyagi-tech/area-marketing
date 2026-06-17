@@ -767,6 +767,16 @@ function renderAreaHeader(area) {
   else if (inc >= 500) badge.classList.add('income-mid');
   else badge.classList.add('income-low');
 
+  // スマホ用バッジ（area-metaの下）にも同じ内容を設定
+  const badgeMobile = document.getElementById('income-badge-mobile');
+  if (badgeMobile) {
+    badgeMobile.textContent = area.income_label || '';
+    badgeMobile.className = 'income-badge';
+    if (inc >= 700) badgeMobile.classList.add('income-high');
+    else if (inc >= 500) badgeMobile.classList.add('income-mid');
+    else badgeMobile.classList.add('income-low');
+  }
+
   const tags = area.area_tags || [];
   document.getElementById('area-tags').innerHTML = tags.map(t => `<span class="area-tag">${t}</span>`).join('');
   document.getElementById('area-pop').textContent = `人口 ${(area.pop_total || 0).toLocaleString()}人`;

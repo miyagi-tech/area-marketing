@@ -113,13 +113,16 @@
         <div id="area-header" class="hidden">
           <div class="area-title-row">
             <h2 id="area-name"></h2>
-            <div id="income-badge"></div>
+            <!-- PC用年収バッジ（スマホでは非表示） -->
+            <div id="income-badge" class="income-badge"></div>
           </div>
           <div id="area-tags"></div>
           <div class="area-meta">
             <span id="area-pop"></span>
             <span id="area-age"></span>
           </div>
+          <!-- スマホ用年収バッジ（スマホのみ表示、area-metaの下） -->
+          <div id="income-badge-mobile" class="income-badge"></div>
         </div>
 
         <!-- 複数エリア情報 -->
