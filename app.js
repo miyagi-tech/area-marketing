@@ -256,6 +256,17 @@ const FACILITIES_DB = [
   { name: '東京スカイツリータウン（近隣）', type: '複合商業施設', grade: 'premium', icon: '🗼', lat: 35.7101, lng: 139.8107, anchor: '亀戸' },
   { name: '銀座（近隣）', type: '百貨店・高級商業街', grade: 'premium', icon: '🏛️', lat: 35.6717, lng: 139.7650, anchor: '越中島' },
   { name: 'コストコ 新木場倉庫店', type: '会員制倉庫型SC', grade: 'standard', icon: '🏭', lat: 35.6460, lng: 139.8280, anchor: '新木場' },
+  // 墨田区 商業施設
+  { name: 'アルカキット錦糸町', type: 'ショッピングセンター', grade: 'standard', icon: '🏬', lat: 35.6965, lng: 139.8149, anchor: '錦糸町' },
+  { name: 'テルミナ（錦糸町）', type: '駅ビル商業施設', grade: 'standard', icon: '🏪', lat: 35.6963, lng: 139.8143, anchor: '錦糸町' },
+  { name: 'オリナス錦糸町', type: 'ショッピングセンター', grade: 'standard', icon: '🏬', lat: 35.6970, lng: 139.8180, anchor: '錦糸町' },
+  { name: '東京スカイツリータウン（ソラマチ）', type: '複合商業施設', grade: 'premium', icon: '🗼', lat: 35.7101, lng: 139.8107, anchor: '押上・スカイツリー' },
+  { name: 'イトーヨーカドー 錦糸町店', type: 'スーパー・SC', grade: 'daily', icon: '🛒', lat: 35.6960, lng: 139.8130, anchor: '錦糸町' },
+  { name: 'マルエツ 両国店', type: 'スーパー', grade: 'daily', icon: '🛒', lat: 35.6960, lng: 139.7930, anchor: '両国' },
+  { name: 'ライフ 菊川店', type: 'スーパー', grade: 'daily', icon: '🛒', lat: 35.6940, lng: 139.8000, anchor: '菊川・緑' },
+  { name: 'マルエツ 向島店', type: 'スーパー', grade: 'daily', icon: '🛒', lat: 35.7150, lng: 139.8090, anchor: '向島' },
+  { name: 'ロッテシティホテル錦糸町（周辺）', type: 'ホテル・複合施設', grade: 'standard', icon: '🏨', lat: 35.6965, lng: 139.8155, anchor: '錦糸町' },
+  { name: '江戸東京博物館（両国）', type: '文化施設', grade: 'standard', icon: '🏛️', lat: 35.6966, lng: 139.7955, anchor: '両国' },
 ];
 
 // ===== 町代表座標（世田谷区・江東区） =====
